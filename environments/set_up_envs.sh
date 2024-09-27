@@ -4,10 +4,15 @@
 
 # loop through all environment .yaml files in this directory
 for file in $(ls -1 *.yaml); do
+
     # create conda environment from .yaml file
-    mamba env create -f $file
+    if mamba env create -f $file; then
+        echo "Environment created successfully"
+    else
+    if mamba env update -f $file; then
+        echo "Environment updated successfully"
+    else
+        echo "Error creating or updating environment"
+    fi
+    fi
 done
-
-
-# set up plugins for cellprofiler
-/home/lippincm/miniforge3/envs/cellprofiler_timelapse_env/bin/cellprofiler
