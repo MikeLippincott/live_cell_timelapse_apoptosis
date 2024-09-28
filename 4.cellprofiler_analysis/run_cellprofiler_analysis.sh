@@ -6,6 +6,14 @@ conda activate cellprofiler_timelapse_env
 # convert the jupyter notebook to a python script
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
+# check if the data is present in the data folder
+# if present then remove the directory
+if [ -d "./analysis_output/" ]; then
+    echo "Data folder exists. Removing the data folder..."
+    rm -r ./analysis_output/
+    echo "Data folder removed."
+fi
+
 # check if the CellProfiler-plugins directory exists
 if [ -d "../../CellProfiler-plugins" ]; then
     echo "CellProfiler-plugins directory exists."
