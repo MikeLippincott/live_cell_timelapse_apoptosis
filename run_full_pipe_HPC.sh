@@ -48,11 +48,11 @@ else
     cd ../3b.run_sam/
     jid3=$(sbatch  --dependency=afterany:$jid2 run_sam2_HPC.sh)
 
-    cd ../4.cellprofiler_analysis/
-    jid4=$(sbatch  --dependency=afterany:$jid3 run_cellprofiler_analysis_HPC.sh)
+    #cd ../4.cellprofiler_analysis/
+    #jid4=$(sbatch  --dependency=afterany:$jid3 run_cellprofiler_analysis_HPC.sh)
 
-    cd ../5.process_CP_features/
-    jid5=$(sbatch  --dependency=afterany:$jid4 processing_features_HPC.sh)
+    #cd ../5.process_CP_features/
+    #jid5=$(sbatch  --dependency=afterany:$jid4 processing_features_HPC.sh)
 
 fi
 

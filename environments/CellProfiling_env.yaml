@@ -2,6 +2,8 @@ name: cellprofiler_timelapse_env
 
 channels:
 - conda-forge
+- anaconda
+- pytorch
 
 dependencies:
 # this is restricted to Python 3.8 at this time due to other conflicts
@@ -31,6 +33,7 @@ dependencies:
 - conda-forge::wxpython=4.2.0
 - conda-forge::sentry-sdk=0.18.0
 - conda-forge::optuna
+- pytoch
 - conda-forge::optuna-dashboard
 - conda-forge::lancedb
 - cudatoolkit
