@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --ntasks=6
+#SBATCH --ntasks=2
 #SBATCH --partition=amilan
 #SBATCH --qos=normal
+#SBATCH --time=4:00:00
 #SBATCH --account=amc-general
-#SBATCH --time=6:00:00
 #SBATCH --output=alpine_std_out_std_err-%j.out
 
 module purge
@@ -26,3 +26,5 @@ conda run -n cellprofiler_timelapse_env python 1.process_ic_teminal_data.py
 cd ../
 
 echo "IC processing complete"
+
+seff $%j

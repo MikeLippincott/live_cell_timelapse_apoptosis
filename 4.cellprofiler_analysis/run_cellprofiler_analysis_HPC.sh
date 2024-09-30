@@ -3,6 +3,7 @@
 #SBATCH --ntasks=4
 #SBATCH --time=6:00:00
 #SBATCH --partition=ami100
+#SBATCH --gres=gpu:1
 #SBATCH --qos=normal
 #SBATCH --output=alpine_std_out_std_err-%j.out
 
