@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --time=48:00:00
+#SBATCH --time=36:00:00
 #SBATCH --partition=amilan
 #SBATCH --qos=long
 #SBATCH --output=alpine_std_out_std_err_full_pipe-%j.out
@@ -12,7 +12,7 @@
 # specific for the HPC cluster running SLURM
 
 # set the first two modules run status
-DOWNLOAD_AND_PREPROCESS_DATA=True
+DOWNLOAD_AND_PREPROCESS_DATA=False
 
 echo "Running the full pipeline..."
 
@@ -53,7 +53,8 @@ else
 
     #cd ../5.process_CP_features/
     #jid5=$(sbatch  --dependency=afterany:$jid4 processing_features_HPC.sh)
-
+    
+    squeue -u $USER -o "%.8A %.4C %.10m %.20E"
 fi
 
 echo "Full pipeline complete."

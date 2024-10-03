@@ -3,7 +3,7 @@
 #SBATCH --ntasks=2
 #SBATCH --partition=amilan
 #SBATCH --qos=normal
-#SBATCH --time=4:00:00
+#SBATCH --time=12:00:00
 #SBATCH --account=amc-general
 #SBATCH --output=alpine_std_out_std_err-%j.out
 
