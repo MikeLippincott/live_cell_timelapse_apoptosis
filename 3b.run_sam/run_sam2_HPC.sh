@@ -2,9 +2,9 @@
 
 #SBATCH --nodes=1
 #SBATCH --mem=50G
-#SBATCH --time=6:00:00
+#SBATCH --time=12:00:00
 #SBATCH --partition=aa100
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --output=alpine_std_out_std_err-%j.out
 
 
