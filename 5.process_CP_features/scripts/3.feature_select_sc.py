@@ -10,10 +10,12 @@
 
 import gc
 import pathlib
+import sys
 
 import pandas as pd
 from pycytominer import feature_select
 from pycytominer.cyto_utils import output
+
 
 # ## Set paths and variables
 
@@ -111,3 +113,4 @@ for info, input_path in dict_of_inputs.items():
     # check to see if the shape of the df has changed indicating feature selection occurred
     print(feature_select_df.shape)
     feature_select_df.head()
+

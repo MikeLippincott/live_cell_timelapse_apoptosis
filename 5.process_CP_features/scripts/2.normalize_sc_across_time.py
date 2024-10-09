@@ -9,10 +9,12 @@
 
 
 import pathlib
+import pprint
 
 import pandas as pd
 from pycytominer import normalize
 from pycytominer.cyto_utils import output
+
 
 # ## Set paths and variables
 
@@ -47,9 +49,9 @@ dict_of_inputs = {
 
 # ## Normalize with standardize method with negative control on annotated data
 
-# The normalization needs to occur per time step.
+# The normalization needs to occur per time step. 
 # This code cell will split the data into time steps and normalize each time step separately.
-# Then each normalized time step will be concatenated back together.
+# Then each normalized time step will be concatenated back together. 
 
 # In[4]:
 
@@ -90,3 +92,4 @@ for info, input_path in dict_of_inputs.items():
     # check to see if the features have been normalized
     print(normalized_df.shape)
     normalized_df.head()
+

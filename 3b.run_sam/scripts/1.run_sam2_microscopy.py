@@ -5,11 +5,11 @@
 # Here I use the pretrained model to segment the nuclei in the video.
 # The output is a mask for each object in each frame and the x,y coordinates centers of each object in each frame.
 
-# This is a notebook that needs perfect conditions to work.
+# This is a notebook that needs perfect conditions to work. 
 # With a GeForce RTX 3090 TI, the 24GB of VRAM sometimes are not enough to process the videos.
-#
+# 
 # Hold your breath, pick a four-leaf clover, avoid black cats, cracks, and mirrors, and let's go!
-#
+# 
 # This notebook is converted to a script and ran from script to be compatible with HPC cluster.
 
 # # Table of Contents for this Notebook
@@ -123,10 +123,10 @@ converted_to_video_dir.mkdir(parents=True, exist_ok=True)
 
 
 tiff_dir = pathlib.Path(
-    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_6hr_4ch_MaxIP_test_small"
+    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_6hr_4ch_MaxIP/"
 ).resolve(strict=True)
 terminal_dir = pathlib.Path(
-    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP_test_small"
+    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP/"
 ).resolve(strict=True)
 
 
@@ -640,3 +640,4 @@ tbl.add(file_paths_df)
 
 # read the data from the table and check the first few rows
 tbl.to_pandas().head()
+

@@ -36,12 +36,12 @@ db = lancedb.connect(uri)
 
 # set the path to the videos
 tiff_dir = pathlib.Path(
-    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_6hr_4ch_MaxIP_test_small/"
+    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_6hr_4ch_MaxIP/"
 ).resolve(strict=True)
 
 # set the path to the terminal data
 terminal_data = pathlib.Path(
-    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP_test_small"
+    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP/"
 ).resolve(strict=True)
 
 

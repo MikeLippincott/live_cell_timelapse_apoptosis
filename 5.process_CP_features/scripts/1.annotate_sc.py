@@ -9,6 +9,7 @@
 
 
 import pathlib
+import sys
 
 import lancedb
 import matplotlib.pyplot as plt
@@ -17,6 +18,7 @@ import pandas as pd
 import seaborn as sns
 from pycytominer import annotate
 from pycytominer.cyto_utils import output
+
 
 # In[2]:
 
@@ -409,3 +411,4 @@ for data_run in dict_of_inputs.keys():
     del merged_df
     del annotated_df
     del location_metadata_df
+
