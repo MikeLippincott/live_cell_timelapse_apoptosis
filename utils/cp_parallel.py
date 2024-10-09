@@ -12,7 +12,6 @@ import subprocess
 from concurrent.futures import Future, ProcessPoolExecutor
 from typing import List, Optional, Union
 
-from exceptions import MaxWorkerError
 
 
 def results_to_log(
@@ -33,7 +32,7 @@ def results_to_log(
     # Access the command (args) and stderr (output) for each CompletedProcess object
     for result in results:
         # assign plate name and decode the CellProfiler output to use in log file
-        plate_name = result.args[6].name
+        plate_name = result
         output_string = result.stderr.decode("utf-8")
 
         # set log file name as plate name from command
@@ -131,9 +130,7 @@ def run_cellprofiler_parallel(
 
     # make sure that the number of workers does not exceed the maximum number of workers for the machine
     if num_processes > multiprocessing.cpu_count():
-        raise MaxWorkerError(
-            "Exception occurred: The number of commands exceeds the number of CPUs/workers. Please reduce the number of commands."
-        )
+        num_processes = multiprocessing.cpu_count() - 2
 
     # set parallelization executer to the number of commands
     executor = ProcessPoolExecutor(max_workers=num_processes)
@@ -155,13 +152,12 @@ def run_cellprofiler_parallel(
 
     # for each process, confirm that the process completed succesfully and return a log file
     for result in results:
-        plate_name = result.args[6].name
         # convert the results into log files
         results_to_log(results=results, log_dir=log_dir, run_name=run_name)
-        print(plate_name, result.returncode)
+        print(result.returncode)
         if result.returncode == 1:
             print(
-                f"A return code of {result.returncode} was returned for {plate_name}, which means there was an error in the CellProfiler run."
+                f"A return code of {result.returncode} was returned for {result}, which means there was an error in the CellProfiler run."
             )
 
     # to avoid having multiple print statements due to for loop, confirmation that logs are converted is printed here
