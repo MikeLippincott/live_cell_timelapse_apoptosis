@@ -235,7 +235,7 @@ files = [str(f) for f in converted_dirs_list]
 
 # need to downscale to fit the model and images on the GPU
 # note that this is an arbitrary number and can be changed
-downscale_factor = 10
+downscale_factor = 2
 # sort the files by name
 # downsample the image
 for f in files:
