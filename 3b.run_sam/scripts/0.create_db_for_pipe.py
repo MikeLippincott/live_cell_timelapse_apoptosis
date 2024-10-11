@@ -99,8 +99,19 @@ schema = pa.schema(
         pa.field("binary_image", pa.binary()),
     ]
 )
-# create the table in the database following the schema
-tbl = db.create_table(
-    "0.original_images", mode="overwrite", data=tiff_df, schema=schema
-)
+# Convert DataFrame to Arrow Table
+try:
+    arrow_table = pa.Table.from_pandas(tiff_df, schema=schema)
+    print("Arrow Table created successfully")
+except pa.ArrowInvalid as e:
+    print(f"Error: {e}")
+
+# Create the table in the database
+try:
+    tbl = db.create_table(
+        "0.original_images", mode="overwrite", data=arrow_table, schema=schema
+    )
+    print("Table created successfully")
+except Exception as e:
+    print(f"Error: {e}")
 

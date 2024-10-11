@@ -22,10 +22,11 @@
 
 # ## 1. Imports
 
-# In[ ]:
+# In[1]:
 
 
 # top level imports
+import argparse
 import gc  # garbage collector
 import logging  # logging
 import pathlib  # path handling
@@ -68,50 +69,114 @@ print(torch.cuda.device_count())
 print(torch.cuda.get_device_name(0))
 
 
+# In[2]:
+
+
+# import the arguments
+parser = argparse.ArgumentParser(description="Process timelapse images.")
+parser.add_argument(
+    "--model_to_use",
+    type=str,
+    default="all",
+    help="Options: all, tiny, small, base, large",
+)
+parser.add_argument("--downscale", type=bool, default=False, help="Downsample images")
+parser.add_argument(
+    "--downscale_factor", type=int, default=1, help="Downsample factor for images"
+)
+
+# get the arguments
+args = parser.parse_args()
+
+model_to_use = args.model_to_use
+downscale = args.downscale
+downscale_factor = args.downscale_factor
+
+
+# model_to_use = "tiny"
+# downsample = True
+# downscale_factor = 15
+
+
 # ## 2. Import data
 
 # ### Download the model(s)
 
-# In[ ]:
+# In[3]:
 
 
 models_dict = {
-    "sam2_hiera_tiny.pt": "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_tiny.pt",
-    "sam2_hiera_small.pt": "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_small.pt",
-    "sam2_hiera_base_plus.pt": "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_base_plus.pt",
-    "sam2_hiera_large.pt": "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_large.pt",
+    "tiny": {
+        "model_path": "sam2_hiera_tiny.pt",
+        "model_link": "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_tiny.pt",
+        "model_cfg": "sam2_hiera_t.yaml",
+    },
+    "small": {
+        "model_path": "sam2_hiera_small.pt",
+        "model_link": "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_small.pt",
+        "model_cfg": "sam2_hiera_s.yaml",
+    },
+    "base": {
+        "model_path": "sam2_hiera_base_plus.pt",
+        "model_link": "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_base_plus.pt",
+        "model_cfg": "sam2_hiera_b+.yaml",
+    },
+    "large": {
+        "model_path": "sam2_hiera_large.pt",
+        "model_link": "https://dl.fbaipublicfiles.com/segment_anything_2/072824/sam2_hiera_large.pt",
+        "model_cfg": "sam2_hiera_l.yaml",
+    },
 }
 
 
-# In[ ]:
+# In[4]:
 
 
 # Download the file using wget
 # this is the model checkpoint for the SAM2 model
-for file in models_dict.keys():
-    model_path = pathlib.Path(file).resolve()
+for model in models_dict.keys():
+    model_path = pathlib.Path(models_dict[model]["model_path"]).resolve()
     new_model_path = pathlib.Path("../../data/models").resolve() / model_path.name
     # check if the model already exists
     if not new_model_path.exists():
-        subprocess.run(["wget", models_dict[file]], check=True)
+        subprocess.run(["wget", models_dict[model]["model_link"]], check=True)
         new_model_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(model_path, new_model_path)
     else:
         print(f"Model {new_model_path} already exists. Skipping download.")
 
+if model_to_use == "tiny":
+    sam2_checkpoint = pathlib.Path("../../data/models/sam2_hiera_tiny.pt").resolve()
+    model_cfg = "sam2_hiera_t.yaml"
+elif model_to_use == "small":
+    sam2_checkpoint = pathlib.Path("../../data/models/sam2_hiera_small.pt").resolve()
+    model_cfg = "sam2_hiera_s.yaml"
+elif model_to_use == "base":
+    sam2_checkpoint = pathlib.Path(
+        "../../data/models/sam2_hiera_base_plus.pt"
+    ).resolve()
+    model_cfg = "sam2_hiera_b+.yaml"
+elif model_to_use == "large":
+    sam2_checkpoint = pathlib.Path("../../data/models/sam2_hiera_large.pt").resolve()
+    model_cfg = "sam2_hiera_l.yaml"
+else:
+    exception_message = (
+        f"Model {model_to_use} not found. Please choose from: tiny, small, base, large"
+    )
 
-# In[ ]:
+
+# In[5]:
 
 
-# load in the model and the predictor
-sam2_checkpoint = pathlib.Path("../../data/models/sam2_hiera_tiny.pt").resolve()
-model_cfg = "sam2_hiera_t.yaml"
 predictor = build_sam2_video_predictor(model_cfg, sam2_checkpoint)
 
 # set the path to the videos
-
-ordered_tiffs = pathlib.Path("../sam2_processing_dir/tiffs/").resolve()
-converted_to_video_dir = pathlib.Path("../sam2_processing_dir/pngs/").resolve()
+sam2_processing_dir = pathlib.Path(
+    f"../sam2_processing_dir/{model_to_use}_model_{downscale_factor}x_factor/"
+).resolve()
+sam2_processing_dir.mkdir(parents=True, exist_ok=True)
+ordered_tiffs = pathlib.Path(sam2_processing_dir / "tiffs/").resolve()
+converted_to_video_dir = pathlib.Path(sam2_processing_dir / "pngs/").resolve()
 if converted_to_video_dir.exists():
     shutil.rmtree(converted_to_video_dir)
 
@@ -119,7 +184,7 @@ ordered_tiffs.mkdir(parents=True, exist_ok=True)
 converted_to_video_dir.mkdir(parents=True, exist_ok=True)
 
 
-# In[ ]:
+# In[6]:
 
 
 tiff_dir = pathlib.Path(
@@ -130,7 +195,7 @@ terminal_dir = pathlib.Path(
 ).resolve(strict=True)
 
 
-# In[ ]:
+# In[7]:
 
 
 # create the database object
@@ -140,7 +205,7 @@ db = lancedb.connect(uri)
 
 # ### Get data formatted correctly
 
-# In[ ]:
+# In[8]:
 
 
 # get the list of tiff files in the directory
@@ -171,7 +236,7 @@ tiff_df.reset_index(drop=True, inplace=True)
 tiff_df.head()
 
 
-# In[ ]:
+# In[9]:
 
 
 # copy the files to the new directory
@@ -182,7 +247,7 @@ for index, row in tiff_df.iterrows():
     shutil.copy(row["file_path"], new_path)
 
 
-# In[ ]:
+# In[10]:
 
 
 # get the list of directories in the ordered tiffs directory
@@ -205,7 +270,7 @@ for dir in ordered_tiff_dir_names:
                 print(f"Failed to convert {tiff_file}: {e}")
 
 
-# In[ ]:
+# In[11]:
 
 
 # get list of dirs in the converted to video dir
@@ -220,7 +285,7 @@ for dir in converted_dir_names:
 
 # ### Donwsample each frame to fit the images on the GPU - overwrite the copies JPEGs
 
-# In[ ]:
+# In[12]:
 
 
 # get files in the directory
@@ -230,12 +295,11 @@ converted_dirs_list = [f for f in converted_dirs_list if f.is_file()]
 files = [str(f) for f in converted_dirs_list]
 
 
-# In[ ]:
+# In[13]:
 
 
 # need to downscale to fit the model and images on the GPU
 # note that this is an arbitrary number and can be changed
-downscale_factor = 2
 # sort the files by name
 # downsample the image
 for f in files:
@@ -251,7 +315,7 @@ for f in files:
 # ### Get the first frame of each video
 # ### Set up a dict that holds the images path, the first frame_mask, and the first frame_centers
 
-# In[ ]:
+# In[14]:
 
 
 # where one image set here is a single well and fov over all timepoints
@@ -281,7 +345,7 @@ for dir in dirs:
 # - the x,y centers of the segmentation
 # - the extracted masks
 
-# In[ ]:
+# In[15]:
 
 
 model = StarDist2D.from_pretrained("2D_versatile_fluo")
@@ -339,7 +403,7 @@ torch.cuda.empty_cache()
 
 # ### Begin GPU Profiling
 
-# In[ ]:
+# In[16]:
 
 
 # Start recording memory snapshot history
@@ -359,13 +423,13 @@ delete_recorded_memory_history(
 
 # Keep a max of 100,000 alloc/free events in the recorded history
 # leading up to the snapshot.
-MAX_NUM_OF_MEM_EVENTS_PER_SNAPSHOT: int = 100000
+MAX_NUM_OF_MEM_EVENTS_PER_SNAPSHOT: int = 100000000
 start_record_memory_history(
     logger=logger, max_entries=MAX_NUM_OF_MEM_EVENTS_PER_SNAPSHOT
 )
 
 
-# In[ ]:
+# In[17]:
 
 
 # clear the memory
@@ -373,13 +437,13 @@ torch.cuda.empty_cache()
 gc.collect()
 
 
-# In[ ]:
+# In[18]:
 
 
 stored_video_segments = {}
 
 
-# In[ ]:
+# In[19]:
 
 
 # loop through each image set and predict the instances
@@ -462,7 +526,7 @@ for i in range(len(image_set_dict["image_set_name"])):
 
 # ### stop GPU profiling
 
-# In[ ]:
+# In[20]:
 
 
 # save the memory snapshot to a file
@@ -472,7 +536,7 @@ export_memory_snapshot(
 stop_record_memory_history(logger=logger)
 
 
-# In[ ]:
+# In[21]:
 
 
 # remove previous runs generated files
@@ -480,25 +544,25 @@ stop_record_memory_history(logger=logger)
 # the new files will be saved in these directories
 
 # for masks
-masks_dir = pathlib.Path("../sam2_processing_dir/masks").resolve()
+masks_dir = pathlib.Path(sam2_processing_dir / "masks").resolve()
 if masks_dir.exists():
     shutil.rmtree(masks_dir)
 masks_dir.mkdir(exist_ok=True, parents=True)
 
 # for gifs
-gifs_dir = pathlib.Path("../sam2_processing_dir/gifs").resolve()
+gifs_dir = pathlib.Path(sam2_processing_dir / "gifs").resolve()
 if gifs_dir.exists():
     shutil.rmtree(gifs_dir)
 gifs_dir.mkdir(exist_ok=True, parents=True)
 
 # for combined masks and tiffs
-combined_dir = pathlib.Path("../sam2_processing_dir/CP_input").resolve()
+combined_dir = pathlib.Path(sam2_processing_dir / "CP_input").resolve()
 if combined_dir.exists():
     shutil.rmtree(combined_dir)
 combined_dir.mkdir(exist_ok=True, parents=True)
 
 
-# In[ ]:
+# In[22]:
 
 
 output_dict = {
@@ -512,7 +576,7 @@ output_dict = {
 }
 
 
-# In[ ]:
+# In[23]:
 
 
 # loop through each image set and save the predicted masks as images
@@ -595,7 +659,7 @@ for i in range(len(image_set_dict["image_set_name"])):
     [f.unlink() for f in tmp_files]
 
 
-# In[ ]:
+# In[24]:
 
 
 file_paths_df = pd.DataFrame(output_dict)
@@ -635,7 +699,7 @@ tbl = db.create_table("1.masked_images", schema=schema, mode="overwrite")
 tbl.add(file_paths_df)
 
 
-# In[ ]:
+# In[25]:
 
 
 # read the data from the table and check the first few rows
