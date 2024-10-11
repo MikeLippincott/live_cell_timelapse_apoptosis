@@ -17,9 +17,9 @@ for model in "${models[@]}" ; do
         # subtract 1 to account for the header
         num_jobs=$((num_jobs-1))
 
-        while num_jobs -lt 6; do
+        while num_jobs -lt 8; do
             sleep 60
-            num_jobs=$(squeue -p aa100 | wc -l )
+            num_jobs=$(squeue -u $USER -p aa100 | wc -l )
             num_jobs=$((num_jobs-1))
         done
 
