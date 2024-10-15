@@ -418,12 +418,15 @@ logger.setLevel(level=logging.INFO)
 TIME_FORMAT_STR: str = "%b_%d_%H_%M_%S"
 # delete any prior memory profiling data
 delete_recorded_memory_history(
-    logger=logger, save_dir=pathlib.Path("../memory_snapshots/").resolve()
+    logger=logger,
+    save_dir=pathlib.Path(
+        f"../memory_snapshots/{model_to_use}_model_{downscale_factor}x_factor/"
+    ).resolve(),
 )
 
 # Keep a max of 100,000 alloc/free events in the recorded history
 # leading up to the snapshot.
-MAX_NUM_OF_MEM_EVENTS_PER_SNAPSHOT: int = 100000000
+MAX_NUM_OF_MEM_EVENTS_PER_SNAPSHOT: int = 10000000000
 start_record_memory_history(
     logger=logger, max_entries=MAX_NUM_OF_MEM_EVENTS_PER_SNAPSHOT
 )
@@ -531,7 +534,10 @@ for i in range(len(image_set_dict["image_set_name"])):
 
 # save the memory snapshot to a file
 export_memory_snapshot(
-    logger=logger, save_dir=pathlib.Path("../memory_snapshots/").resolve()
+    logger=logger,
+    save_dir=pathlib.Path(
+        f"../memory_snapshots/{model_to_use}_model_{downscale_factor}x_factor/"
+    ).resolve(),
 )
 stop_record_memory_history(logger=logger)
 
@@ -637,11 +643,14 @@ for i in range(len(image_set_dict["image_set_name"])):
         ax.imshow(frame_image, cmap="gray")
         ax.set_title(f"Frame {out_frame_idx}")
         # save the figure to a file
-        fig.savefig(f"tmp_{out_frame_idx}.png")
+        tmpdir = pathlib.Path(
+            sam2_processing_dir / f"tmp_{out_frame_idx}.png"
+        ).resolve()
+        fig.savefig(tmpdir)
         # close the figure
         plt.close(fig)
         # open the image
-        img = Image.open(f"tmp_{out_frame_idx}.png")
+        img = Image.open(tmpdir)
         # append the image to the frames
         frames.append(img)
 
