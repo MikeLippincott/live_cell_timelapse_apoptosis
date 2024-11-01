@@ -6,6 +6,7 @@ channels:
 dependencies:
   - python=3.11
   - conda-forge::pandas=2.0.0
+  - conda-forge::pip
   - conda-forge::pandas>=2.0.0
   - conda-forge::jupyter
   - conda-forge::ipykernel
@@ -26,3 +27,5 @@ dependencies:
   - conda-forge::colorcet
   - conda-forge::bokeh
   - conda-forge::plotly
+  - pip:
+    - lancedb

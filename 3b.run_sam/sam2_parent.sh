@@ -5,9 +5,8 @@
 #SBATCH --qos=long
 #SBATCH --output=alpine_parent_std_out_std_err-%j.out
 
-#models=( "tiny" "small" "base" "large" )
-models=( "base" "large" )
-downscale_factors=( 2 4 5 10 )
+models=( "tiny" "small" "base" "large" )
+downscale_factors=( 4 5 10 )
 for model in "${models[@]}" ; do
     for downscale_factor in "${downscale_factors[@]}" ; do
         echo "Model: $model"
@@ -18,7 +17,7 @@ for model in "${models[@]}" ; do
         # subtract 1 to account for the header
         num_jobs=$((num_jobs-1))
 
-        while num_jobs -gt 8; do
+        while num_jobs -gt 6; do
             sleep 60
             num_jobs=$(squeue -u $USER -p aa100 | wc -l )
             num_jobs=$((num_jobs-1))
@@ -33,3 +32,6 @@ for model in "${models[@]}" ; do
         fi
     done
 done
+
+echo "All jobs submitted."
+exit 0
