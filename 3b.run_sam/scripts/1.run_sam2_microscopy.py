@@ -5,11 +5,11 @@
 # Here I use the pretrained model to segment the nuclei in the video.
 # The output is a mask for each object in each frame and the x,y coordinates centers of each object in each frame.
 
-# This is a notebook that needs perfect conditions to work. 
+# This is a notebook that needs perfect conditions to work.
 # With a GeForce RTX 3090 TI, the 24GB of VRAM sometimes are not enough to process the videos.
-# 
+#
 # Hold your breath, pick a four-leaf clover, avoid black cats, cracks, and mirrors, and let's go!
-# 
+#
 # This notebook is converted to a script and ran from script to be compatible with HPC cluster.
 
 # # Table of Contents for this Notebook
@@ -40,6 +40,7 @@ import numpy as np  # numerical python
 import pandas as pd  # data handling
 import pyarrow as pa  # pyarrow for parquet
 import torch  # pytorch deep learning
+import tqdm  # progress bar
 from csbdeep.utils import Path, normalize  # dependecy for stardist
 from PIL import Image  # image handling
 from sam2.build_sam import build_sam2, build_sam2_video_predictor  # sam2
@@ -91,11 +92,6 @@ args = parser.parse_args()
 model_to_use = args.model_to_use
 downscale = args.downscale
 downscale_factor = args.downscale_factor
-
-
-# model_to_use = "tiny"
-# downsample = True
-# downscale_factor = 15
 
 
 # ## 2. Import data
@@ -195,17 +191,9 @@ terminal_dir = pathlib.Path(
 ).resolve(strict=True)
 
 
-# In[7]:
-
-
-# create the database object
-uri = pathlib.Path("../../data/objects_db").resolve()
-db = lancedb.connect(uri)
-
-
 # ### Get data formatted correctly
 
-# In[8]:
+# In[7]:
 
 
 # get the list of tiff files in the directory
@@ -232,11 +220,16 @@ tiff_df["new_path"] = (
     + tiff_df["file_name"]
     + ".tiff"
 )
+# remove any file name that contain "F0005" or "F0006"
+print(f"{tiff_df.shape[0]} prior to removing F0005 and F0006")
+tiff_df = tiff_df[~tiff_df["file_name"].str.contains("F0005")]
+tiff_df = tiff_df[~tiff_df["file_name"].str.contains("F0006")]
 tiff_df.reset_index(drop=True, inplace=True)
+print(f"{tiff_df.shape[0]} after removing F0005 and F0006")
 tiff_df.head()
 
 
-# In[9]:
+# In[8]:
 
 
 # copy the files to the new directory
@@ -247,7 +240,7 @@ for index, row in tiff_df.iterrows():
     shutil.copy(row["file_path"], new_path)
 
 
-# In[10]:
+# In[9]:
 
 
 # get the list of directories in the ordered tiffs directory
@@ -270,7 +263,7 @@ for dir in ordered_tiff_dir_names:
                 print(f"Failed to convert {tiff_file}: {e}")
 
 
-# In[11]:
+# In[10]:
 
 
 # get list of dirs in the converted to video dir
@@ -285,7 +278,7 @@ for dir in converted_dir_names:
 
 # ### Donwsample each frame to fit the images on the GPU - overwrite the copies JPEGs
 
-# In[12]:
+# In[11]:
 
 
 # get files in the directory
@@ -295,7 +288,7 @@ converted_dirs_list = [f for f in converted_dirs_list if f.is_file()]
 files = [str(f) for f in converted_dirs_list]
 
 
-# In[13]:
+# In[12]:
 
 
 # need to downscale to fit the model and images on the GPU
@@ -315,7 +308,7 @@ for f in files:
 # ### Get the first frame of each video
 # ### Set up a dict that holds the images path, the first frame_mask, and the first frame_centers
 
-# In[14]:
+# In[13]:
 
 
 # where one image set here is a single well and fov over all timepoints
@@ -345,7 +338,7 @@ for dir in dirs:
 # - the x,y centers of the segmentation
 # - the extracted masks
 
-# In[15]:
+# In[14]:
 
 
 model = StarDist2D.from_pretrained("2D_versatile_fluo")
@@ -399,11 +392,14 @@ del model
 torch.cuda.empty_cache()
 
 
+# Each of the below cells need to be run on the HPC cluster.
+# My local machine does not have enough memory to run the below cells.
+
 # ## 4. Track multiple objects in the video
 
 # ### Begin GPU Profiling
 
-# In[16]:
+# In[ ]:
 
 
 # Start recording memory snapshot history
@@ -432,7 +428,7 @@ start_record_memory_history(
 )
 
 
-# In[17]:
+# In[ ]:
 
 
 # clear the memory
@@ -440,13 +436,13 @@ torch.cuda.empty_cache()
 gc.collect()
 
 
-# In[18]:
+# In[ ]:
 
 
 stored_video_segments = {}
 
 
-# In[19]:
+# In[ ]:
 
 
 # loop through each image set and predict the instances
@@ -529,7 +525,7 @@ for i in range(len(image_set_dict["image_set_name"])):
 
 # ### stop GPU profiling
 
-# In[20]:
+# In[ ]:
 
 
 # save the memory snapshot to a file
@@ -542,7 +538,7 @@ export_memory_snapshot(
 stop_record_memory_history(logger=logger)
 
 
-# In[21]:
+# In[ ]:
 
 
 # remove previous runs generated files
@@ -568,7 +564,7 @@ if combined_dir.exists():
 combined_dir.mkdir(exist_ok=True, parents=True)
 
 
-# In[22]:
+# In[ ]:
 
 
 output_dict = {
@@ -582,7 +578,7 @@ output_dict = {
 }
 
 
-# In[23]:
+# In[ ]:
 
 
 # loop through each image set and save the predicted masks as images
@@ -663,12 +659,12 @@ for i in range(len(image_set_dict["image_set_name"])):
     )
 
     # get all files that have tmp in the name
-    tmp_files = list(Path(".").glob("tmp*.png"))
+    tmp_files = list(tmpdir.glob("tmp*.png"))
     # delete all the tmp files
     [f.unlink() for f in tmp_files]
 
 
-# In[24]:
+# In[ ]:
 
 
 file_paths_df = pd.DataFrame(output_dict)
@@ -687,30 +683,14 @@ file_paths_df["y"] = file_paths_df["y"].astype(np.float32)
 file_paths_df["mask_path"] = file_paths_df["mask_path"].astype(str)
 file_paths_df["mask_file_name"] = file_paths_df["mask_file_name"].astype(str)
 file_paths_df["mask_file_path"] = file_paths_df["mask_file_path"].astype(str)
-# add to the db
-# set up schema
-schema = pa.schema(
-    [
-        pa.field("image_set_name", pa.string()),
-        pa.field("frame", pa.int32()),
-        pa.field("object_id", pa.int32()),
-        pa.field("x", pa.float32()),
-        pa.field("y", pa.float32()),
-        pa.field("mask_path", pa.string()),
-        pa.field("mask_file_name", pa.string()),
-        pa.field("mask_file_path", pa.string()),
-    ]
-)
-
-# create the table
-tbl = db.create_table("1.masked_images", schema=schema, mode="overwrite")
-# write the data to the table
-tbl.add(file_paths_df)
 
 
-# In[25]:
+# In[ ]:
 
 
-# read the data from the table and check the first few rows
-tbl.to_pandas().head()
-
+file_paths_df_write_path = pathlib.Path(
+    f"{sam2_processing_dir}/object_coords/"
+).resolve()
+file_paths_df_write_path.mkdir(parents=True, exist_ok=True)
+file_paths_df_write_path = file_paths_df_write_path / "object_coords.parquet"
+file_paths_df.to_parquet(file_paths_df_write_path)

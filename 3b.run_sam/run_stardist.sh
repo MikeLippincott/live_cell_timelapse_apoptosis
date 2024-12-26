@@ -12,7 +12,7 @@ cd scripts/ || exit
 
 for downscale_factor in "${downscale_factors[@]}"; do
     echo "Running stardist pipe for downscale factor: $downscale_factor"
-    python 1.prepare_stardist.py --downscale_factor "$downscale_factor"
+    python 2.run_stardist.py --downscale_factor "$downscale_factor"
 done
 
 
