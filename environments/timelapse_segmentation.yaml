@@ -25,13 +25,12 @@ dependencies:
   - conda-forge::torchvision
   - conda-forge::cudatoolkit
   - conda-forge::cudnn
-  - conda-forge::tensorflow
+  - conda-forge::tensorflow-gpu
   - conda-forge::coincbc
+  - conda-forge::pyarrow
   - pip:
-      - torch
-      - cellpose
-      - stardist
-      - tifffile
-      - ultrack
-
-
+    - torch
+    - cellpose
+    - stardist
+    - tifffile
+    - ultrack

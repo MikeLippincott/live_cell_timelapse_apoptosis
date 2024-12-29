@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
+import os
 import pathlib
 import shutil
 
@@ -14,6 +15,7 @@ import pandas as pd
 import seaborn as sns
 import skimage
 import tifffile
+import torch
 import tqdm
 from PIL import Image
 from rich.pretty import pprint
@@ -33,8 +35,32 @@ except NameError:
 
 print(f"Running in notebook: {in_notebook}")
 
+os.environ["OMP_NUM_THREADS"] = "8"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-# In[ ]:
+
+# check gpu
+import tensorflow as tf
+
+gpu_devices = tf.config.experimental.list_physical_devices("GPU")
+if not gpu_devices:
+    print("No GPU found")
+else:
+    print("GPU found")
+
+
+# tensorflow clear gpu memory
+def clear_gpu_memory():
+    from numba import cuda
+
+    cuda.select_device(0)
+    cuda.close()
+
+
+clear_gpu_memory()
+
+
+# In[2]:
 
 
 if not in_notebook:
@@ -142,6 +168,8 @@ tifffile.imwrite(f"{temporary_output_dir}/timelapse_raw.tif", timelapse_raw)
 tifffile.imwrite(f"{temporary_output_dir}/detections.tif", detections)
 tifffile.imwrite(f"{temporary_output_dir}/edges.tif", edges)
 
+clear_gpu_memory()
+
 
 # In[8]:
 
@@ -151,7 +179,7 @@ if in_notebook:
     params_df["area"].plot(kind="hist", bins=100, title="Area histogram")
 
 
-# In[ ]:
+# In[9]:
 
 
 config = MainConfig()
@@ -290,3 +318,9 @@ if track_db_path.exists():
     track_db_path.unlink()
 if metadata_toml_path.exists():
     metadata_toml_path.unlink()
+
+
+# In[16]:
+
+
+clear_gpu_memory()
