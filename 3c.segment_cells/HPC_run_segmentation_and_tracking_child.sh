@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=1
+#SBATCH --ntasks=4
 #SBATCH --time=00:30:00
 #SBATCH --partition=aa100
 #SBATCH --qos=normal
