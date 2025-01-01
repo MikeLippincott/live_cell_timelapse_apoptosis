@@ -14,14 +14,7 @@ cd scripts/ || exit
 
 # get the list of dirs in path
 mapfile -t main_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/*)
-mapfile -t terminal_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/*/)
-
-# remove dirs that contain "Annexin" from main
-for i in "${!main_dirs[@]}"; do
-    if [[ ${main_dirs[$i]} == *"Annexin"* ]]; then
-        unset 'main_dirs[$i]'
-    fi
-done
+mapfile -t terminal_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/**￼  re-optimize segmentation
 
 # remove dirs that contain "4ch" from terminal
 for i in "${!terminal_dirs[@]}"; do

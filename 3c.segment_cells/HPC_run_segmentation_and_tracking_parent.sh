@@ -20,7 +20,7 @@ cd scripts/ || exit
 
 # get the list of dirs in path
 mapfile -t main_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/*)
-mapfile -t terminal_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/*/)
+mapfile -t terminal_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/*)
 
 cd ../ || exit
 
@@ -60,7 +60,7 @@ for i in "${!main_dirs[@]}"; do
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
     echo " '$job_id' '$main_dir' '$terminal_dir' "
-    echo " '$job_id' '$dir' '$terminal_dir' " >> job_ids.txt
+    echo " '$job_id' 'i' '$terminal_dir' " >> job_ids.txt
     job_id=$(sbatch HPC_run_segmentation_and_tracking_child.sh "$main_dir" "$terminal_dir")
     # append the job id to the file
     job_id=$(echo $job_id | awk '{print $4}')
