@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --ntasks=1
+#SBATCH --ntasks=8
 #SBATCH --partition=amilan
 #SBATCH --qos=normal
 #SBATCH --account=amc-general
-#SBATCH --time=2:00:00
+#SBATCH --time=6:00:00
 #SBATCH --output=sample-%j.out
 
 module purge
@@ -15,7 +15,8 @@ module load mambaforge
 # loop through all environment .yaml files in this directory
 for file in $(ls -1 *.yaml); do
     # create conda environment from .yaml file
-    mamba env create -f $file
+    #mamba env create -f $file
+    mamba env update -f $file
 done
 
 

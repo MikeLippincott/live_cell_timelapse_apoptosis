@@ -70,4 +70,4 @@ done
 
 conda deactivate
 
-echa "Submitted all jobs. $jobs_submitted_counter jobs submitted."
+echo "Submitted all jobs. $jobs_submitted_counter jobs submitted."

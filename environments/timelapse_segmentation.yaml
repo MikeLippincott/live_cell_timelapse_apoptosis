@@ -25,7 +25,7 @@ dependencies:
   - conda-forge::torchvision
   - conda-forge::cudatoolkit
   - conda-forge::cudnn
-  - conda-forge::tensorflow-gpu
+  - conda-forge::tensorflow
   - conda-forge::coincbc
   - conda-forge::pyarrow
   - pip:
