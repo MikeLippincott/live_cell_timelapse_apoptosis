@@ -34,3 +34,4 @@ dependencies:
     - stardist
     - tifffile
     - ultrack
+    - optuna
