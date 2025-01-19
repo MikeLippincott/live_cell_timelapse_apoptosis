@@ -1,4 +1,10 @@
 #!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --time=01:00:00
+#SBATCH --partition=amilan
+#SBATCH --qos=normal
+#SBATCH --output=segment_child-%j.out
 
 # This script will work on a local machine that has enough VRAM to actually run the segmentation and tracking.
 # Mine does not so we shall run this on the cluster on a NVIDIA a100 40GB VRAM GPU.
@@ -6,22 +12,17 @@
 conda activate timelapse_segmentation_env
 
 # run the segmentation and tracking
-echo "Starting segmentation and tracking..."
+echo "Submitting GPU jobs to segment and track objects in the images..."
 
 jupyter nbconvert --to python --output-dir=scripts/ notebooks/*.ipynb
 
 cd scripts/ || exit
 
 # get the list of dirs in path
-mapfile -t main_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/*)
-# mapfile -t terminal_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/**  re-optimize segmentation
+mapfile -t main_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/*)
+mapfile -t terminal_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory/test_data/endpoint/*)
 
-# remove dirs that contain "4ch" from terminal
-for i in "${!terminal_dirs[@]}"; do
-    if [[ ${terminal_dirs[$i]} == *"4ch"* ]]; then
-        unset 'terminal_dirs[$i]'
-    fi
-done
+cd ../ || exit
 
 # remove empty elements
 terminal_dirs=("${terminal_dirs[@]}")
@@ -32,18 +33,23 @@ if [ ${#main_dirs[@]} -ne ${#terminal_dirs[@]} ]; then
     exit 1
 fi
 
+touch job_ids.txt
+jobs_submitted_counter=0
 # run the pipelines
 for i in "${!main_dirs[@]}"; do
     main_dir="${main_dirs[$i]}"
+    terminal_dir="${terminal_dirs[$i]}"
     echo "Processing main directory: $main_dir with terminal directory: $terminal_dir"
-    papermill 0.nuclei_segmentation_optimization.ipynb 0.nuclei_segmentation_optimization.ipynb
-    sleep 2 # give time for cuda to release memory
-
+    number_of_jobs=$(squeue -u $USER | wc -l)
+    while [ $number_of_jobs -gt 990 ]; do
+        sleep 1s
+        number_of_jobs=$(squeue -u $USER | wc -l)
+    done
+    sbatch HPC_run_segmentation_and_tracking_child.sh "$main_dir" "$terminal_dir"
 
 done
 
-cd ../ || exit
 
 conda deactivate
 
-echo "Segmentation and tracking done."
+echo "Submitted all jobs. $jobs_submitted_counter jobs submitted."
