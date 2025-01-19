@@ -5,7 +5,7 @@
 #SBATCH --partition=aa100
 #SBATCH --qos=normal
 #SBATCH --gres=gpu:1
-#SBATCH --output=segment_child-%j.out
+#SBATCH --output=segment_optimization-%j.out
 
 conda activate timelapse_segmentation_env
 

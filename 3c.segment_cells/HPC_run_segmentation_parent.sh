@@ -4,7 +4,7 @@
 #SBATCH --time=01:00:00
 #SBATCH --partition=amilan
 #SBATCH --qos=normal
-#SBATCH --output=segment_child-%j.out
+#SBATCH --output=segment_parent-%j.out
 
 # This script will work on a local machine that has enough VRAM to actually run the segmentation and tracking.
 # Mine does not so we shall run this on the cluster on a NVIDIA a100 40GB VRAM GPU.
