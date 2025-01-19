@@ -14,7 +14,7 @@ cd scripts/ || exit
 
 # get the list of dirs in path
 mapfile -t main_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/*)
-mapfile -t terminal_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/**￼  re-optimize segmentation
+# mapfile -t terminal_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory_test/**  re-optimize segmentation
 
 # remove dirs that contain "4ch" from terminal
 for i in "${!terminal_dirs[@]}"; do
@@ -35,9 +35,8 @@ fi
 # run the pipelines
 for i in "${!main_dirs[@]}"; do
     main_dir="${main_dirs[$i]}"
-    terminal_dir="${terminal_dirs[$i]}"
     echo "Processing main directory: $main_dir with terminal directory: $terminal_dir"
-    python 0.stardist_segment_every_frame.py --input_dir_main "$main_dir" --input_dir_terminal "$terminal_dir"
+    papermill 0.nuclei_segmentation_optimization.ipynb 0.nuclei_segmentation_optimization.ipynb
     sleep 2 # give time for cuda to release memory
 
 
