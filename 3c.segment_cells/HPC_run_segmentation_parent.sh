@@ -9,6 +9,9 @@
 # This script will work on a local machine that has enough VRAM to actually run the segmentation and tracking.
 # Mine does not so we shall run this on the cluster on a NVIDIA a100 40GB VRAM GPU.
 
+module load anaconda
+conda init bash
+
 conda activate timelapse_segmentation_env
 
 # run the segmentation and tracking
@@ -45,7 +48,7 @@ for i in "${!main_dirs[@]}"; do
         sleep 1s
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
-    sbatch HPC_run_segmentation_and_tracking_child.sh "$main_dir" "$terminal_dir"
+    sbatch HPC_run_segmentation_child.sh "$main_dir" "$terminal_dir"
 
 done
 

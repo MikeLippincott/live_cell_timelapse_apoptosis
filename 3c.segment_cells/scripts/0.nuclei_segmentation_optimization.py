@@ -163,3 +163,4 @@ sns.lineplot(data=all_masks_df, x="diameter", y="unique_masks", hue="image_dir")
 plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 plt.title("Number of unique masks for each diameter")
 plt.show()
+

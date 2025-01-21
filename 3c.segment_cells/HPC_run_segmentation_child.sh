@@ -7,6 +7,8 @@
 #SBATCH --gres=gpu:1
 #SBATCH --output=segment_child-%j.out
 
+module load anaconda
+
 conda activate timelapse_segmentation_env
 
 main_dir=$1

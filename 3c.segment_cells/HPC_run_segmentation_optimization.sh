@@ -7,6 +7,9 @@
 #SBATCH --gres=gpu:1
 #SBATCH --output=segment_optimization-%j.out
 
+module load anaconda
+conda init bash
+
 conda activate timelapse_segmentation_env
 
 cd scripts/ || exit
