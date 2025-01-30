@@ -27,9 +27,6 @@ mapfile -t terminal_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_dire
 
 cd ../ || exit
 
-# remove empty elements
-terminal_dirs=("${terminal_dirs[@]}")
-main_dirs=("${main_dirs[@]}")
 
 if [ ${#main_dirs[@]} -ne ${#terminal_dirs[@]} ]; then
     echo "Error: The number of main directories and terminal directories do not match."

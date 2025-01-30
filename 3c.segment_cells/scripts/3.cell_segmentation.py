@@ -64,7 +64,7 @@ if not in_notebook:
 
 else:
     input_dir = pathlib.Path(
-        "../../2.cellprofiler_ic_processing/illum_directory_test/20231017ChromaLive_6hr_4ch_MaxIP_C-02_F0001"
+        "../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_C-05_F0001"
     ).resolve(strict=True)
     clip_limit = 0.6
     diameter = 100
@@ -239,4 +239,3 @@ device = torch.device("cuda:0")
 free_after, total_after = torch.cuda.mem_get_info(device)
 amount_used = ((total_after - free_after)) / 1024**2
 print(f"Used: {amount_used} MB or {amount_used / 1024} GB of GPU RAM")
-
