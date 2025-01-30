@@ -1,11 +1,15 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --mem=32G
+#SBATCH --ntasks=10
+#SBATCH --mem=128G
 #SBATCH --time=00:60:00
 #SBATCH --partition=aa100
 #SBATCH --qos=normal
 #SBATCH --gres=gpu:1
 #SBATCH --output=segment_child-%j.out
+
+# nstasks = n of cores
+# where 1 core = 3.75 GB 
 
 module load anaconda
 
