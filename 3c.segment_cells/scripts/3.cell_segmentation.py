@@ -31,6 +31,9 @@ except NameError:
     in_notebook = False
 
 print(in_notebook)
+# check if we have a GPU
+use_gpu = torch.cuda.is_available()
+print("GPU activated:", use_gpu)
 
 
 # In[2]:
@@ -64,14 +67,10 @@ if not in_notebook:
 
 else:
     input_dir = pathlib.Path(
-        "../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_C-05_F0001"
+        "../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_C-02_F0001"
     ).resolve(strict=True)
     clip_limit = 0.6
     diameter = 100
-
-
-figures_dir = pathlib.Path("../figures").resolve()
-figures_dir.mkdir(exist_ok=True, parents=True)
 
 
 # In[3]:
@@ -183,7 +182,26 @@ imgs = np.array(imgs)
 
 # ## Cellpose
 
+# Weird errors occur when running this converted notebook in the command line.
+# This cell helps the python interpreter figure out where it is...somehow.
+
 # In[9]:
+
+
+test = imgs[0, :, :, :]
+model_name = "cyto3"
+diameter = 50
+
+model = models.Cellpose(model_type=model_name, gpu=True)
+
+channels = [[1, 3]]
+
+# # get masks
+# for _ in range(1):
+masks, flows, styles, diams = model.eval(test, channels=channels, diameter=diameter)
+
+
+# In[10]:
 
 
 # model_type='cyto' or 'nuclei' or 'cyto2' or 'cyto3'
@@ -214,6 +232,11 @@ for frame_index, frame in enumerate(image_dict["nuclei_file_paths"]):
         f"{input_dir}/{str(frame).split('/')[-1].split('_C01')[0]}_cell_mask.tiff",
         masks_all[frame_index, :, :],
     )
+
+
+# In[11]:
+
+
 if in_notebook:
     for z in range(len(masks_all)):
         plt.figure(figsize=(20, 10))
@@ -231,7 +254,7 @@ if in_notebook:
         plt.show()
 
 
-# In[10]:
+# In[12]:
 
 
 # set up memory profiler for GPU

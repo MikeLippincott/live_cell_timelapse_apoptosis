@@ -7,7 +7,7 @@ channels:
 - defaults
 
 dependencies:
-  - conda-forge::python=3.10
+  - conda-forge::python=3.11
   - conda-forge::ipykernel
   - conda-forge::jupyter
   - conda-forge::nbconvert

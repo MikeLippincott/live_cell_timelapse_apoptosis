@@ -11,6 +11,7 @@
 import argparse
 import pathlib
 
+import cellpose
 import matplotlib.pyplot as plt
 
 # Import dependencies
@@ -18,10 +19,20 @@ import numpy as np
 import skimage
 import tifffile
 import torch
+from cellpose import core
+from cellpose import io as cellpose_io
 from cellpose import models
+
+cellpose_io.logger_setup()
+# set the gpu via OS environment variable
+import os
+
 from csbdeep.utils import normalize
 from PIL import Image
 from stardist.plot import render_label
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # check if in a jupyter notebook
 try:
@@ -31,9 +42,12 @@ except NameError:
     in_notebook = False
 
 print(in_notebook)
+# check if we have a GPU
+use_gpu = torch.cuda.is_available()
+print("GPU activated:", use_gpu)
 
 
-# In[2]:
+# In[5]:
 
 
 if not in_notebook:
@@ -70,11 +84,7 @@ else:
     diameter = 70
 
 
-figures_dir = pathlib.Path("../figures").resolve()
-figures_dir.mkdir(exist_ok=True, parents=True)
-
-
-# In[3]:
+# In[6]:
 
 
 # set up memory profiler for GPU
@@ -86,15 +96,16 @@ print("Starting level of GPU RAM available (MB): ", starting_level_GPU_RAM)
 
 # ## Set up images, paths and functions
 
-# In[4]:
+# In[7]:
 
 
 image_extensions = {".tif", ".tiff"}
 files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
+print(len(files))
 
 
-# In[5]:
+# In[8]:
 
 
 image_dict = {
@@ -103,7 +114,7 @@ image_dict = {
 }
 
 
-# In[6]:
+# In[9]:
 
 
 # split files by channel
@@ -117,41 +128,78 @@ nuclei = np.array(nuclei_image_list).astype(np.int16)
 
 nuclei = skimage.exposure.equalize_adapthist(nuclei, clip_limit=clip_limit)
 
-print(nuclei.shape)
-
-
-# In[7]:
-
-
-original_nuclei_image = nuclei.copy()
+nuclei_image_list = [np.array(nuclei_image) for nuclei_image in nuclei]
+print(len(nuclei_image_list))
 
 
 # ## Cellpose
 
-# In[8]:
+# Weird errors occur when running this converted notebook in the command line.
+# This cell helps the python interpreter figure out where it is...somehow.
+
+# In[10]:
+
+
+test = nuclei_image_list[0]
+model_name = "nuclei"
+diameter = 50
+
+model = models.Cellpose(model_type=model_name, gpu=True)
+
+channels = [[1, 0]]
+
+# # get masks
+# for _ in range(1):
+masks, flows, styles, diams = model.eval(test, channels=channels, diameter=diameter)
+
+
+# In[14]:
 
 
 # model_type='cyto' or 'nuclei' or 'cyto2' or 'cyto3'
 model_name = "nuclei"
-model = models.Cellpose(model_type=model_name, gpu=True)
+use_GPU = core.use_gpu()
+print("GPU activated: ", use_GPU)
+model = models.Cellpose(model_type=model_name, gpu=use_GPU)
 
 channels = [[1, 0]]
 
 masks_all_dict = {"masks": [], "imgs": []}
 
+
+def get_masks(image, model, channels, diameter):
+    masks, flows, styles, _ = model.eval(
+        normalize(image), channels=channels, diameter=diameter
+    )
+    return masks
+
+
 # get masks for all the images
 # save to a dict for later use
-for img in nuclei:
-    img = normalize(img)
-    masks, flows, styles, diams = model.eval(img, channels=channels, diameter=diameter)
+for img in range(nuclei.shape[0]):
+    nuclei[img, :, :] = normalize(nuclei[img, :, :])
 
+results = [
+    (
+        img,
+        nuclei[img, :, :].shape,
+        model.eval(nuclei[img, :, :], channels=channels, diameter=diameter),
+    )
+    for img in range(nuclei.shape[0])
+]
+
+# Print the results
+for img, shape, (masks, flows, styles, _) in results:
     masks_all_dict["masks"].append(masks)
     masks_all_dict["imgs"].append(img)
+
+
 masks_all = masks_all_dict["masks"]
 imgs = masks_all_dict["imgs"]
-
 masks_all = np.array(masks_all)
 imgs = np.array(imgs)
+print(masks_all.shape)
+print(imgs.shape)
 
 for frame_index, frame in enumerate(image_dict["nuclei_file_paths"]):
     tifffile.imwrite(
@@ -162,7 +210,7 @@ for frame_index, frame in enumerate(image_dict["nuclei_file_paths"]):
     )
 
 
-# In[9]:
+# In[12]:
 
 
 if in_notebook:
@@ -182,7 +230,7 @@ if in_notebook:
         plt.show()
 
 
-# In[10]:
+# In[13]:
 
 
 # set up memory profiler for GPU
