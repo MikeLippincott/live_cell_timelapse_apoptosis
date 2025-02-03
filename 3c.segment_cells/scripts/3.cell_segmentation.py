@@ -18,11 +18,19 @@ import numpy as np
 import skimage
 import tifffile
 import torch
+from cellpose import io as cellpose_io
 from cellpose import models
+
+cellpose_io.logger_setup()
+# set the gpu via OS environment variable
+import os
+
 from csbdeep.utils import normalize
 from PIL import Image
 from stardist.plot import render_label
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 # check if in a jupyter notebook
 try:
     cfg = get_ipython().config
@@ -66,8 +74,11 @@ if not in_notebook:
     diameter = args.diameter
 
 else:
+    # input_dir = pathlib.Path(
+    #     "../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_C-02_F0001"
+    # ).resolve(strict=True)
     input_dir = pathlib.Path(
-        "../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_C-02_F0001"
+        "../../2.cellprofiler_ic_processing/illum_directory/test_data/endpoint/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP_C-02_F0001"
     ).resolve(strict=True)
     clip_limit = 0.6
     diameter = 100
@@ -109,34 +120,45 @@ image_dict = {
 
 
 # split files by channel
-for file in files:
-    if "C01" in file.split("/")[-1]:
-        image_dict["nuclei_file_paths"].append(file)
-        image_dict["nuclei"].append(tifffile.imread(file).astype(np.float32))
-    elif "C02" in file.split("/")[-1]:
-        image_dict["cytoplasm1"].append(tifffile.imread(file).astype(np.float32))
-    elif "C03" in file.split("/")[-1]:
-        image_dict["cytoplasm2"].append(tifffile.imread(file).astype(np.float32))
-    elif "C04" in file.split("/")[-1]:
-        image_dict["cytoplasm3"].append(tifffile.imread(file).astype(np.float32))
+if not "Annexin" in input_dir.name:
+    for file in files:
+        if "C01" in file.split("/")[-1]:
+            image_dict["nuclei_file_paths"].append(file)
+            image_dict["nuclei"].append(tifffile.imread(file).astype(np.float32))
+        elif "C02" in file.split("/")[-1]:
+            image_dict["cytoplasm1"].append(tifffile.imread(file).astype(np.float32))
+        elif "C03" in file.split("/")[-1]:
+            image_dict["cytoplasm2"].append(tifffile.imread(file).astype(np.float32))
+        elif "C04" in file.split("/")[-1]:
+            image_dict["cytoplasm3"].append(tifffile.imread(file).astype(np.float32))
 
-cytoplasm_image_list = [
-    np.max(
-        np.array(
-            [
-                cytoplasm1,
-                cytoplasm2,
-                cytoplasm3,
-            ]
-        ),
-        axis=0,
-    )
-    for cytoplasm1, cytoplasm2, cytoplasm3 in zip(
-        image_dict["cytoplasm1"],
-        image_dict["cytoplasm2"],
-        image_dict["cytoplasm3"],
-    )
-]
+    cytoplasm_image_list = [
+        np.max(
+            np.array(
+                [
+                    cytoplasm1,
+                    cytoplasm2,
+                    cytoplasm3,
+                ]
+            ),
+            axis=0,
+        )
+        for cytoplasm1, cytoplasm2, cytoplasm3 in zip(
+            image_dict["cytoplasm1"],
+            image_dict["cytoplasm2"],
+            image_dict["cytoplasm3"],
+        )
+    ]
+else:
+    for file in files:
+        if "C01" in file.split("/")[-1]:
+            image_dict["nuclei_file_paths"].append(file)
+            image_dict["nuclei"].append(tifffile.imread(file).astype(np.float32))
+        elif "C05" in file.split("/")[-1]:
+            image_dict["cytoplasm1"].append(tifffile.imread(file).astype(np.float32))
+
+    cytoplasm_image_list = image_dict["cytoplasm1"]
+
 
 nuclei_image_list = [np.array(nuclei) for nuclei in image_dict["nuclei"]]
 
@@ -189,8 +211,9 @@ imgs = np.array(imgs)
 
 
 test = imgs[0, :, :, :]
+print(test.shape)
 model_name = "cyto3"
-diameter = 50
+diameter = 100
 
 model = models.Cellpose(model_type=model_name, gpu=True)
 

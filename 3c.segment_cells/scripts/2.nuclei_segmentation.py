@@ -47,7 +47,7 @@ use_gpu = torch.cuda.is_available()
 print("GPU activated:", use_gpu)
 
 
-# In[5]:
+# In[2]:
 
 
 if not in_notebook:
@@ -77,14 +77,17 @@ if not in_notebook:
     diameter = args.diameter
 
 else:
+    # input_dir = pathlib.Path(
+    #     "../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_C-03_F0001"
+    # ).resolve(strict=True)
     input_dir = pathlib.Path(
-        "../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_C-02_F0001"
+        "../../2.cellprofiler_ic_processing/illum_directory/test_data/endpoint/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP_C-02_F0001"
     ).resolve(strict=True)
     clip_limit = 0.6
     diameter = 70
 
 
-# In[6]:
+# In[3]:
 
 
 # set up memory profiler for GPU
@@ -96,7 +99,7 @@ print("Starting level of GPU RAM available (MB): ", starting_level_GPU_RAM)
 
 # ## Set up images, paths and functions
 
-# In[7]:
+# In[4]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -105,7 +108,7 @@ files = [str(x) for x in files if x.suffix in image_extensions]
 print(len(files))
 
 
-# In[8]:
+# In[5]:
 
 
 image_dict = {
@@ -114,7 +117,7 @@ image_dict = {
 }
 
 
-# In[9]:
+# In[6]:
 
 
 # split files by channel
@@ -137,7 +140,7 @@ print(len(nuclei_image_list))
 # Weird errors occur when running this converted notebook in the command line.
 # This cell helps the python interpreter figure out where it is...somehow.
 
-# In[10]:
+# In[7]:
 
 
 test = nuclei_image_list[0]
@@ -153,7 +156,7 @@ channels = [[1, 0]]
 masks, flows, styles, diams = model.eval(test, channels=channels, diameter=diameter)
 
 
-# In[14]:
+# In[8]:
 
 
 # model_type='cyto' or 'nuclei' or 'cyto2' or 'cyto3'
@@ -210,7 +213,7 @@ for frame_index, frame in enumerate(image_dict["nuclei_file_paths"]):
     )
 
 
-# In[12]:
+# In[9]:
 
 
 if in_notebook:
@@ -230,7 +233,7 @@ if in_notebook:
         plt.show()
 
 
-# In[13]:
+# In[10]:
 
 
 # set up memory profiler for GPU
