@@ -241,3 +241,4 @@ device = torch.device("cuda:0")
 free_after, total_after = torch.cuda.mem_get_info(device)
 amount_used = ((total_after - free_after)) / 1024**2
 print(f"Used: {amount_used} MB or {amount_used / 1024} GB of GPU RAM")
+

@@ -11,15 +11,16 @@ module purge
 module load mambaforge
 
 # create conda environments needed for the project
-
+mamba env remove -n timelapse_segmentation_env -y
+mamba env create -f timelapse_segmentation.yaml 
 # loop through all environment .yaml files in this directory
-for file in $(ls -1 *.yaml); do
+#for file in $(ls -1 *.yaml); do
     # create conda environment from .yaml file
     #mamba env create -f $file
-    mamba env update -f $file
-done
+#    mamba env update -f $file
+#done
 
 
 # set up plugins for cellprofiler
-/scratch/alpine/${USER}/CellProfiler-plugins/active_plugins
+#/scratch/alpine/${USER}/CellProfiler-plugins/active_plugins
 
