@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# This notebook creates a lance database for storing image/single-cell metadata for tracking single cells through time. 
+# This notebook creates a lance database for storing image/single-cell metadata for tracking single cells through time.
 # This lance db will be called in the next notebook in this analysis.
 
 # In[1]:
@@ -19,7 +19,6 @@ import pyarrow as pa
 import tifffile
 from tqdm import tqdm
 
-
 # In[2]:
 
 
@@ -31,28 +30,22 @@ if uri.exists():
 db = lancedb.connect(uri)
 
 
-# In[3]:
+# In[ ]:
 
 
 # set the path to the videos
 tiff_dir = pathlib.Path(
-    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_6hr_4ch_MaxIP/"
-).resolve(strict=True)
-
-# set the path to the terminal data
-terminal_data = pathlib.Path(
-    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP/"
+    "../../2.cellprofiler_ic_processing/illum_directory/timelapse/20231017ChromaLive_6hr_4ch_MaxIP/"
 ).resolve(strict=True)
 
 
 # ### Get data formatted correctly
 
-# In[4]:
+# In[ ]:
 
 
 # get the list of tiff files in the directory
 tiff_files = list(tiff_dir.glob("*.tiff"))
-tiff_files = tiff_files + list(terminal_data.glob("*.tiff"))
 tiff_file_names = [file.stem for file in tiff_files]
 # files to df
 tiff_df = pd.DataFrame({"file_name": tiff_file_names, "file_path": tiff_files})
@@ -114,4 +107,3 @@ try:
     print("Table created successfully")
 except Exception as e:
     print(f"Error: {e}")
-

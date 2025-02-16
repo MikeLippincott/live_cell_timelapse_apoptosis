@@ -82,4 +82,8 @@ data/processed_images/**
 
 # Cluster files
 *alpine_std_out_std_err-*
-
+4.cell_tracking/results/*
+4.cell_tracking/figures/*
+data/raw_data/*
+data/preprocessed_data/*
+data/test_data/*

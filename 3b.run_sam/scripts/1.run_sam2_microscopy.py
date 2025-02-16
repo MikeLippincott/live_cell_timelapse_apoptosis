@@ -180,25 +180,21 @@ ordered_tiffs.mkdir(parents=True, exist_ok=True)
 converted_to_video_dir.mkdir(parents=True, exist_ok=True)
 
 
-# In[6]:
+# In[ ]:
 
 
 tiff_dir = pathlib.Path(
     "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_6hr_4ch_MaxIP/"
 ).resolve(strict=True)
-terminal_dir = pathlib.Path(
-    "../../2.cellprofiler_ic_processing/illum_directory/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP/"
-).resolve(strict=True)
 
 
 # ### Get data formatted correctly
 
-# In[7]:
+# In[ ]:
 
 
 # get the list of tiff files in the directory
 tiff_files = list(tiff_dir.glob("*.tiff"))
-tiff_files = tiff_files + list(terminal_dir.glob("*.tiff"))
 tiff_file_names = [file.stem for file in tiff_files]
 # files to df
 tiff_df = pd.DataFrame({"file_name": tiff_file_names, "file_path": tiff_files})
