@@ -9,13 +9,13 @@ module purge
 mamba activate sam2_env
 
 git clone git@github.com:facebookresearch/segment-anything-2.git
-cd segment-anything-2
+cd segment-anything-2 || exit
 git checkout 57bc94b7391e47e5968004a0698f8bf793a544d1
 
 module load cuda/12.1
 pip install --no-build-isolation -e .
 
-cd ../
+cd ../ || exit
 
 mamba deactivate
 

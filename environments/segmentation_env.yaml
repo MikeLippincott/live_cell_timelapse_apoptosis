@@ -1,0 +1,18 @@
+# env file for running scDINO
+name: stardist_env
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+  - nvidia
+dependencies:
+  - python=3.11
+  - pyarrow
+  - imageio
+  - ipykernel
+  - jupyter
+  - matplotlib
+  - lancedb
+  - pandas
+  - stardist
+  - pip
