@@ -14,13 +14,13 @@ model=$1
 downscale_factor=$2
 
 jupyter nbconvert --to python --output-dir=scripts/ notebooks/*.ipynb
-cd scripts/
+cd scripts/ || exit
 
 # run the pipelines
-python 0.create_db_for_pipe.py
+python 1.run_stardist.py
+python 2.run_sam2_microscopy.py --model_to_use "$model" --downscale_factor "$downscale_factor" --downscale
 
-python 1.run_sam2_microscopy.py --model_to_use "$model" --downscale "True" --downscale_factor "$downscale_factor"
 
-cd ../../
+cd ../ | exit
 
 mamba deactivate
