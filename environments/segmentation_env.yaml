@@ -6,7 +6,7 @@ channels:
   - pytorch
   - nvidia
 dependencies:
-  - python=3.11
+  - python=3.10
   - pyarrow
   - imageio
   - ipykernel
@@ -15,4 +15,5 @@ dependencies:
   - lancedb
   - pandas
   - stardist
+  - tensorflow-gpu
   - pip
