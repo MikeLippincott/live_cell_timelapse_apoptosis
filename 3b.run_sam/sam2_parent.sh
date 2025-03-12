@@ -20,14 +20,15 @@ for model in "${models[@]}" ; do
         while num_jobs -gt 6; do
             sleep 60
             num_jobs=$(squeue -u $USER -p aa100 | wc -l )
+	    num_jobs=$(squeue -u $USER -p al40 | wc -l) + $num_jobs
             num_jobs=$((num_jobs-1))
         done
 
         if [ "$downscale_factor" -lt 10 ]; then
-            sbatch --nodes=1 --ntasks=8 --mem=240G --time=22:00:00 --partition=aa100 --gres=gpu:1 --constraint=gpu80 --output=alpine_std_out_std_err-%j.out run_sam2_HPC.sh "$model" "$downscale_factor"
+            sbatch --nodes=1 --ntasks=8 --mem=12G --time=2:00:00 --partition=aa100 --gres=gpu:1 --constraint=gpu80 --output=alpine_std_out_std_err-%j.out run_sam2_HPC.sh "$model" "$downscale_factor"
             echo "Submitted job for downscale factor $downscale_factor with model $model on the 80 GPU partition."
         else
-            sbatch --nodes=1 --ntasks=8 --mem=240G --time=22:00:00 --partition=aa100 --gres=gpu:1 --output=alpine_std_out_std_err-%j.out run_sam2_HPC.sh "$model" "$downscale_factor"
+            sbatch --nodes=1 --ntasks=8 --mem=12G --time=2:00:00 --partition=al40 --gres=gpu:1 --output=alpine_std_out_std_err-%j.out run_sam2_HPC.sh "$model" "$downscale_factor"
             echo "Submitted job for downscale factor $downscale_factor with model $model on the 40 GPU partition."
         fi
     done

@@ -1,0 +1,33 @@
+# conda environments:
+#
+base                  *  /curc/sw/anaconda3/2023.09
+ATOC_NWP                 /curc/sw/anaconda3/2023.09/envs/ATOC_NWP
+bash_spr23               /curc/sw/anaconda3/2023.09/envs/bash_spr23
+pyomp_2022               /curc/sw/anaconda3/2023.09/envs/pyomp_2022
+synoptic_f23             /curc/sw/anaconda3/2023.09/envs/synoptic_f23
+GFF_cellpose             /projects/mlippincott@xsede.org/software/anaconda/envs/GFF_cellpose
+GFF_cellprofiler         /projects/mlippincott@xsede.org/software/anaconda/envs/GFF_cellprofiler
+GFF_segmentation         /projects/mlippincott@xsede.org/software/anaconda/envs/GFF_segmentation
+Interstellar_R           /projects/mlippincott@xsede.org/software/anaconda/envs/Interstellar_R
+Interstellar_python      /projects/mlippincott@xsede.org/software/anaconda/envs/Interstellar_python
+R_timelapse_env          /projects/mlippincott@xsede.org/software/anaconda/envs/R_timelapse_env
+cell_tracking_env        /projects/mlippincott@xsede.org/software/anaconda/envs/cell_tracking_env
+cellprofiler_timelapse_env     /projects/mlippincott@xsede.org/software/anaconda/envs/cellprofiler_timelapse_env
+cytominer-eval-demo      /projects/mlippincott@xsede.org/software/anaconda/envs/cytominer-eval-demo
+gff_preprocessing_env     /projects/mlippincott@xsede.org/software/anaconda/envs/gff_preprocessing_env
+interstellar_data        /projects/mlippincott@xsede.org/software/anaconda/envs/interstellar_data
+interstellar_data_1      /projects/mlippincott@xsede.org/software/anaconda/envs/interstellar_data_1
+lecture10_env            /projects/mlippincott@xsede.org/software/anaconda/envs/lecture10_env
+parallel_and_hpc_compute_env     /projects/mlippincott@xsede.org/software/anaconda/envs/parallel_and_hpc_compute_env
+pyroptosis_timelapse_R     /projects/mlippincott@xsede.org/software/anaconda/envs/pyroptosis_timelapse_R
+pyroptosis_timelapse_env     /projects/mlippincott@xsede.org/software/anaconda/envs/pyroptosis_timelapse_env
+pyroptosis_timnelapse_env     /projects/mlippincott@xsede.org/software/anaconda/envs/pyroptosis_timnelapse_env
+rnaseq_r_env             /projects/mlippincott@xsede.org/software/anaconda/envs/rnaseq_r_env
+sam2_env                 /projects/mlippincott@xsede.org/software/anaconda/envs/sam2_env
+sam_env                  /projects/mlippincott@xsede.org/software/anaconda/envs/sam_env
+scDINO_env               /projects/mlippincott@xsede.org/software/anaconda/envs/scDINO_env
+slurm_env                /projects/mlippincott@xsede.org/software/anaconda/envs/slurm_env
+slurm_stats_env          /projects/mlippincott@xsede.org/software/anaconda/envs/slurm_stats_env
+timelapse_env            /projects/mlippincott@xsede.org/software/anaconda/envs/timelapse_env
+timelapse_segmentation_env     /projects/mlippincott@xsede.org/software/anaconda/envs/timelapse_segmentation_env
+
