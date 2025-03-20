@@ -13,7 +13,7 @@ for model in "${models[@]}" ; do
         echo "Downscale factor: $downscale_factor"
 
         # get the current number of jobs in the queue on aa100 partition
-        num_jobs=$(squeue -p aa100 | wc -l )
+        num_jobs=$(squeue -u $USER -p aa100 | wc -l )
         # subtract 1 to account for the header
         num_jobs=$((num_jobs-1))
 
