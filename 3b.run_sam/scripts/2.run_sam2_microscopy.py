@@ -5,11 +5,11 @@
 # Here I use the pretrained model to segment the nuclei in the video.
 # The output is a mask for each object in each frame and the x,y coordinates centers of each object in each frame.
 
-# This is a notebook that needs perfect conditions to work. 
+# This is a notebook that needs perfect conditions to work.
 # With a GeForce RTX 3090 TI, the 24GB of VRAM sometimes are not enough to process the videos.
-# 
+#
 # Hold your breath, pick a four-leaf clover, avoid black cats, cracks, and mirrors, and let's go!
-# 
+#
 # This notebook is converted to a script and ran from script to be compatible with HPC cluster.
 
 # # Table of Contents for this Notebook
@@ -67,34 +67,31 @@ print(torch.cuda.device_count())
 print(torch.cuda.get_device_name(0))
 
 
-# In[2]:
+# In[ ]:
 
 
-# # import the arguments
-# parser = argparse.ArgumentParser(description="Process timelapse images.")
-# parser.add_argument(
-#     "--model_to_use",
-#     type=str,
-#     default="all",
-#     help="Options: all, tiny, small, base, large",
-# )
-# parser.add_argument(
-#     "--downscale_factor", type=int, default=1, help="Downsample factor for images"
-# )
+# import the arguments
+parser = argparse.ArgumentParser(description="Process timelapse images.")
+parser.add_argument(
+    "--model_to_use",
+    type=str,
+    default="all",
+    help="Options: all, tiny, small, base, large",
+)
+parser.add_argument(
+    "--downscale_factor", type=int, default=1, help="Downsample factor for images"
+)
 
-# parser.add_argument(
-#     "--downscale", action="store_true", help="Downsample the images before processing"
-# )
+parser.add_argument(
+    "--downscale", action="store_true", help="Downsample the images before processing"
+)
 
-# # get the arguments
-# args = parser.parse_args()
+# get the arguments
+args = parser.parse_args()
 
-# model_to_use = args.model_to_use
-# downscale_factor = args.downscale_factor
-# downscale = args.downscale
-
-model_to_use = "tiny"
-downscale_factor = 10
+model_to_use = args.model_to_use
+downscale_factor = args.downscale_factor
+downscale = args.downscale
 
 
 # ## 2. Import data
@@ -583,4 +580,3 @@ file_paths_df_write_path = pathlib.Path(
 file_paths_df_write_path.mkdir(parents=True, exist_ok=True)
 file_paths_df_write_path = file_paths_df_write_path / "object_coords.parquet"
 file_paths_df.to_parquet(file_paths_df_write_path)
-

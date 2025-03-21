@@ -13,12 +13,8 @@
 # top level imports
 import argparse
 import gc  # garbage collector
-import logging  # logging
 import pathlib  # path handling
 import shutil  # file handling
-import subprocess  # subprocess handling
-import sys  # system
-import time
 
 import matplotlib.pyplot as plt  # plotting
 import numpy as np  # numerical python
@@ -33,23 +29,19 @@ from skimage.transform import resize  # image handling
 from stardist.models import StarDist2D  # stardist
 from stardist.plot import render_label  # stardist
 
-
-# In[2]:
-
-
-# # import the arguments
-# parser = argparse.ArgumentParser(description="Process timelapse images.")
-# parser.add_argument(
-#     "--downscale_factor", type=int, default=1, help="Downsample factor for images"
-# )
-
-# # get the arguments
-# args = parser.parse_args()
-
-# downscale_factor = args.downscale_factor
+# In[ ]:
 
 
-downscale_factor = 10
+# import the arguments
+parser = argparse.ArgumentParser(description="Process timelapse images.")
+parser.add_argument(
+    "--downscale_factor", type=int, default=1, help="Downsample factor for images"
+)
+
+# get the arguments
+args = parser.parse_args()
+
+downscale_factor = args.downscale_factor
 
 
 # ## 2. Import data
@@ -261,4 +253,3 @@ for i in tqdm.tqdm(range(len(all_images_set_dict["image_set_name"]))):
             mask_path / f"{all_images_set_dict['images'][i][image[0]].stem}.jpeg"
         )
         plt.imsave(mask_path, mask)
-
