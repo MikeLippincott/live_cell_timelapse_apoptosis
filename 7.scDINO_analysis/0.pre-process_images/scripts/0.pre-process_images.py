@@ -31,7 +31,7 @@ except NameError:
     in_notebook = False
 
 
-# In[ ]:
+# In[2]:
 
 
 def get_crop_counts(list_of_counts: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
@@ -214,7 +214,7 @@ image_path = pathlib.Path(
 radius = 50
 
 
-# In[ ]:
+# In[6]:
 
 
 # set the number of processes to use

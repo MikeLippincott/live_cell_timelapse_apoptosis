@@ -31,7 +31,7 @@ except NameError:
 #
 # All paths must be string but we use pathlib to show which variables are paths
 
-# In[2]:
+# In[ ]:
 
 
 # type of file output from CytoTable (currently only parquet)
