@@ -1,22 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
 import pathlib
 import sys
 
-import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import scipy.ndimage as scind
-import scipy.sparse
-from centrosome.filter import stretch
-from scipy.fftpack import fft2, ifft2
-from skimage import io, registration, transform
 
 sys.path.append("../alignment_utils")
 from alignment_utils import align_cross_correlation, apply_alignment

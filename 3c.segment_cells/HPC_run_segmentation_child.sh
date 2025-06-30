@@ -16,15 +16,13 @@ module load cuda/11.8
 conda activate timelapse_segmentation_env
 
 main_dir=$1
-terminal_dir=$2
 
 cd scripts/ || exit
 
 
-python 2.nuclei_segmentation.py --input_dir "$main_dir" --clip_limit 0.6 --diameter 70
-python 2.nuclei_segmentation.py --input_dir "$terminal_dir" --clip_limit 0.6 --diameter 70
+python 2.nuclei_segmentation.py --input_dir "$main_dir" --clip_limit 0.2 --diameter 70
 
-python 3.cell_segmentation.py --input_dir "$main_dir" --clip_limit 0.6 --diameter 100
+python 3.cell_segmentation.py --input_dir "$main_dir" --clip_limit 0.2
 
 cd ../ || exit
 

@@ -1,7 +1,7 @@
 repos:
   # Update the pre-commit hooks
 -   repo: https://gitlab.com/vojko.pribudic.foss/pre-commit-update
-    rev: v0.7.0       # Insert the latest tag here
+    rev: v0.8.0       # Insert the latest tag here
     hooks:
     -   id: pre-commit-update
         args: [--exclude, black, --keep, isort]
@@ -42,7 +42,13 @@ repos:
     -   id: mixed-line-ending # removes mixed end of line
         args:
         -   --fix=lf
--   repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.10.0
-    hooks:
-      - id: shellcheck
+- repo: local
+  hooks:
+    - id: shellcheck
+      name: shellcheck
+      description: Test shell scripts with shellcheck
+      entry: shellcheck
+      language: python
+      types: [shell]
+      require_serial: true # shellcheck can detect sourcing this way
+

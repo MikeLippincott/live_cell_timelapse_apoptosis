@@ -11,10 +11,8 @@
 import argparse
 
 # set the gpu via OS environment variable
-import os
 import pathlib
 
-import cellpose
 import matplotlib.pyplot as plt
 
 # Import dependencies
@@ -22,13 +20,6 @@ import numpy as np
 import skimage
 import tifffile
 import torch
-from cellpose import core, models
-from csbdeep.utils import normalize
-from PIL import Image
-from stardist.plot import render_label
-
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # check if in a jupyter notebook
 try:
@@ -36,11 +27,6 @@ try:
     in_notebook = True
 except NameError:
     in_notebook = False
-
-print(in_notebook)
-# check if we have a GPU
-use_gpu = torch.cuda.is_available()
-print("GPU activated:", use_gpu)
 
 
 # In[2]:
@@ -61,26 +47,17 @@ if not in_notebook:
         type=float,
         help="Clip limit for the adaptive histogram equalization",
     )
-    parser.add_argument(
-        "--diameter",
-        type=bool,
-        help="diameter of the nuclei to segment",
-    )
 
     args = parser.parse_args()
     clip_limit = args.clip_limit
     input_dir = pathlib.Path(args.input_dir).resolve(strict=True)
-    diameter = args.diameter
 
 else:
     input_dir = pathlib.Path(
-        "../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_C-02_F0001"
+        "../../2.cellprofiler_ic_processing/illum_directory/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_E-11_F0002"
     ).resolve(strict=True)
-    # input_dir = pathlib.Path(
-    #     "../../2.cellprofiler_ic_processing/illum_directory/test_data/endpoint/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP_E-11_F0001"
-    # ).resolve(strict=True)
-    clip_limit = 0.6
-    diameter = 100
+
+    clip_limit = 0.05
 
 
 # In[3]:
@@ -119,6 +96,7 @@ image_dict = {
 # In[6]:
 
 
+nuclei_mask_image_list = []
 for file in files:
     if "C01" in file.split("/")[-1]:
         image_dict["nuclei_file_paths"].append(file)
@@ -129,11 +107,14 @@ for file in files:
         image_dict["cytoplasm2"].append(tifffile.imread(file).astype(np.float32))
     elif "C04" in file.split("/")[-1]:
         image_dict["cytoplasm3"].append(tifffile.imread(file).astype(np.float32))
+    elif "nuclei" in file.split("/")[-1]:
+        nuclei_mask_image_list.append(tifffile.imread(file).astype(np.float32))
 
     cytoplasm_image_list = [
         np.max(
             np.array(
                 [
+                    nuclei,
                     cytoplasm1,
                     cytoplasm2,
                     cytoplasm3,
@@ -141,7 +122,8 @@ for file in files:
             ),
             axis=0,
         )
-        for cytoplasm1, cytoplasm2, cytoplasm3 in zip(
+        for nuclei, cytoplasm1, cytoplasm2, cytoplasm3 in zip(
+            image_dict["nuclei"],
             image_dict["cytoplasm1"],
             image_dict["cytoplasm2"],
             image_dict["cytoplasm3"],
@@ -152,108 +134,68 @@ cyto = np.array(cytoplasm_image_list).astype(np.int16)
 cyto = skimage.exposure.equalize_adapthist(cyto, clip_limit=clip_limit)
 
 
-# ## Cellpose
-
-# Weird errors occur when running this converted notebook in the command line.
-# This cell helps the python interpreter figure out where it is...somehow.
+# # seeded watershed segmentation
 
 # In[7]:
 
 
-test = cyto[0]
-diameter = 50
-
-model = models.CellposeModel(gpu=True)
-
-channels = [[1, 0]]
-
-# # get masks
-# for _ in range(1):
-masks, flows, styles = model.eval(test, channels=channels, diameter=diameter)
+masks_all_dict = {
+    "nuclei_masks": [],
+    "cytoplasm_images": [],
+    "cytoplasm_masks": [],
+}
 
 
 # In[8]:
 
 
-# model_type='cyto' or 'nuclei' or 'cyto2' or 'cyto3'
-model_name = "nuclei"
-use_GPU = core.use_gpu()
-print("GPU activated: ", use_GPU)
-model = models.CellposeModel(model_type=model_name, gpu=use_GPU)
+from scipy import ndimage
 
-channels = [[1, 0]]
+# set the seeds
+from skimage import filters, measure, morphology, segmentation
 
-masks_all_dict = {"masks": [], "imgs": []}
+# Create seeds from nuclei
 
+for timepoint in range(len(image_dict["nuclei_file_paths"])):
+    frame = image_dict["nuclei_file_paths"][timepoint]
+    cell_mask_filename = f"{str(frame).split('/')[-1].split('_C01')[0]}_cell_mask.tiff"
+    watershed_seeds = measure.label(nuclei_mask_image_list[timepoint], connectivity=1)
+    # Dilate nuclei to create cytoplasm boundaries
+    intensity_threshold = np.percentile(cyto[timepoint], 50)  # Adjust percentile
+    cyto_mask = cyto[timepoint] > intensity_threshold
 
-def get_masks(image, model, channels, diameter):
-    masks, flows, styles, _ = model.eval(
-        normalize(image), channels=channels, diameter=diameter
+    cytoplasm_mask = segmentation.watershed(
+        filters.sobel(cyto[timepoint]), markers=watershed_seeds, mask=cyto_mask
     )
-    return masks
+    # dilate the cytoplasm mask to ensure it covers the cytoplasm
+    cytoplasm_mask = morphology.dilation(
+        cytoplasm_mask, morphology.disk(1)
+    )  # Adjust radius
 
-
-# get masks for all the images
-# save to a dict for later use
-for img in range(cyto.shape[0]):
-    cyto[img, :, :] = normalize(cyto[img, :, :])
-
-results = [
-    (
-        img,
-        cyto[img, :, :].shape,
-        model.eval(cyto[img, :, :], channels=channels, diameter=diameter),
-    )
-    for img in range(cyto.shape[0])
-]
-
-# Print the results
-for img, shape, (masks, flows, styles) in results:
-    masks_all_dict["masks"].append(masks)
-    masks_all_dict["imgs"].append(img)
-
-
-masks_all = masks_all_dict["masks"]
-imgs = masks_all_dict["imgs"]
-masks_all = np.array(masks_all)
-imgs = np.array(imgs)
-print(masks_all.shape)
-print(imgs.shape)
-
-for frame_index, frame in enumerate(image_dict["nuclei_file_paths"]):
-    tifffile.imwrite(
-        pathlib.Path(
-            input_dir / f"{str(frame).split('/')[-1].split('_C01')[0]}_cell_mask.tiff"
-        ),
-        masks_all[frame_index, :, :],
-    )
+    # Store the results
+    masks_all_dict["nuclei_masks"].append(nuclei_mask_image_list[timepoint])
+    masks_all_dict["cytoplasm_images"].append(cyto[timepoint])
+    masks_all_dict["cytoplasm_masks"].append(cytoplasm_mask)
+    tifffile.imwrite(pathlib.Path(input_dir / cell_mask_filename), cytoplasm_mask)
 
 
 # In[9]:
 
 
 if in_notebook:
-    for z in range(len(masks_all)):
-        plt.figure(figsize=(20, 10))
-        plt.title(f"z: {z}")
+    for timepoint in range(len(masks_all_dict["cytoplasm_masks"])):
+        plt.figure(figsize=(15, 5))
+        plt.subplot(1, 3, 1)
+        plt.imshow(nuclei_mask_image_list[timepoint], cmap="gray")
+        plt.title("Nuclei Mask")
         plt.axis("off")
-        plt.subplot(1, 2, 1)
-        plt.imshow(cyto[z], cmap="gray")
-        plt.title("Nuclei")
+        plt.subplot(1, 3, 2)
+        plt.imshow(cyto[timepoint], cmap="gray")
+        plt.title("Cytoplasm Image")
         plt.axis("off")
-
-        plt.subplot(122)
-        plt.imshow(render_label(masks_all[z]))
-        plt.title("Nuclei masks")
+        plt.subplot(1, 3, 3)
+        plt.imshow(masks_all_dict["cytoplasm_masks"][timepoint], cmap="gray")
+        plt.title("Cytoplasm Mask")
         plt.axis("off")
+        plt.tight_layout()
         plt.show()
-
-
-# In[10]:
-
-
-# set up memory profiler for GPU
-device = torch.device("cuda:0")
-free_after, total_after = torch.cuda.mem_get_info(device)
-amount_used = ((total_after - free_after)) / 1024**2
-print(f"Used: {amount_used} MB or {amount_used / 1024} GB of GPU RAM")
