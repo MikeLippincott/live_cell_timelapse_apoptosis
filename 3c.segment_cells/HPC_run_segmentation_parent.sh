@@ -23,30 +23,24 @@ cd scripts/ || exit
 
 # get the list of dirs in path
 mapfile -t main_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory/timelapse/*)
-mapfile -t terminal_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory/endpoint/*)
 
 cd ../ || exit
 
-
-if [ ${#main_dirs[@]} -ne ${#terminal_dirs[@]} ]; then
-    echo "Error: The number of main directories and terminal directories do not match."
-    exit 1
-fi
 
 touch job_ids.txt
 jobs_submitted_counter=0
 # run the pipelines
 for i in "${!main_dirs[@]}"; do
     main_dir="${main_dirs[$i]}"
-    terminal_dir="${terminal_dirs[$i]}"
-    echo "Processing main directory: $main_dir with terminal directory: $terminal_dir"
-    number_of_jobs=$(squeue -u $USER | wc -l)
-    while [ $number_of_jobs -gt 990 ]; do # max jobs are 1000, 990 is a safe number
+    echo "Processing main directory: $main_dir"
+    number_of_jobs=$(squeue -u "$USER" | wc -l)
+    while [ "$number_of_jobs" -gt 990 ]; do # max jobs are 1000, 990 is a safe number
         sleep 1s
-        number_of_jobs=$(squeue -u $USER | wc -l)
+        number_of_jobs=$(squeue -u "$USER" | wc -l)
     done
-    sbatch HPC_run_segmentation_child.sh "$main_dir" "$terminal_dir"
+    sbatch HPC_run_segmentation_child.sh "$main_dir"
 
+    jobs_submitted_counter=$((jobs_submitted_counter + 1))
 done
 
 
