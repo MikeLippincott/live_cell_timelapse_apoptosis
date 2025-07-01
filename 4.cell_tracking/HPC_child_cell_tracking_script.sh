@@ -2,12 +2,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time=30:00
-#SBATCH --partition=aa100
-#SBATCH --gres=gpu:1
+#SBATCH --partition=amilan
 #SBATCH --output=cell_tracking-%j.out
 
 module load miniforge
-module load cuda/11.8
 conda init bash
 conda activate cell_tracking_env
 
