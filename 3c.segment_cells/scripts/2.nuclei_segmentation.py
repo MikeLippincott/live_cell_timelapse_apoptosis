@@ -5,10 +5,16 @@
 # The end goals is to segment cell and extract morphology features from cellprofiler.
 # These masks must be imported into cellprofiler to extract features.
 
+# In[ ]:
+
+
+input_dir = "../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_E-11_F0001"
+clip_limit = 0.3
+diameter = 70
+
+
 # In[1]:
 
-
-import argparse
 
 # set the gpu via OS environment variable
 import os
@@ -30,6 +36,7 @@ from stardist.plot import render_label
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
+
 # check if in a jupyter notebook
 try:
     cfg = get_ipython().config
@@ -43,44 +50,10 @@ use_gpu = torch.cuda.is_available()
 print("GPU activated:", use_gpu)
 
 
-# In[2]:
+# In[ ]:
 
 
-if not in_notebook:
-    # set up arg parser
-    parser = argparse.ArgumentParser(description="Segment the nuclei of a tiff image")
-
-    parser.add_argument(
-        "--input_dir",
-        type=str,
-        help="Path to the input directory containing the tiff images",
-    )
-
-    parser.add_argument(
-        "--clip_limit",
-        type=float,
-        help="Clip limit for the adaptive histogram equalization",
-    )
-    parser.add_argument(
-        "--diameter",
-        type=bool,
-        help="diameter of the nuclei to segment",
-    )
-
-    args = parser.parse_args()
-    clip_limit = args.clip_limit
-    input_dir = pathlib.Path(args.input_dir).resolve(strict=True)
-    diameter = args.diameter
-
-else:
-    input_dir = pathlib.Path(
-        "../../2.cellprofiler_ic_processing/illum_directory/test_data/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_E-11_F0001"
-    ).resolve(strict=True)
-    # input_dir = pathlib.Path(
-    #     "../../2.cellprofiler_ic_processing/illum_directory/test_data/endpoint/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP_E-11_F0001"
-    # ).resolve(strict=True)
-    clip_limit = 0.3
-    diameter = 70
+input_dir = pathlib.Path(input_dir).resolve(strict=True)
 
 
 # In[3]:
@@ -101,7 +74,6 @@ print("Starting level of GPU RAM available (MB): ", starting_level_GPU_RAM)
 image_extensions = {".tif", ".tiff"}
 files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
-print(len(files))
 
 
 # In[5]:
@@ -128,82 +100,64 @@ nuclei = np.array(nuclei_image_list).astype(np.int16)
 nuclei = skimage.exposure.equalize_adapthist(nuclei, clip_limit=clip_limit)
 
 nuclei_image_list = [np.array(nuclei_image) for nuclei_image in nuclei]
-print(len(nuclei_image_list))
 
 
 # ## Cellpose
 
 # Weird errors occur when running this converted notebook in the command line.
 # This cell helps the python interpreter figure out where it is...somehow.
+# Wrap the loop in a function to avoid the error...
 
-# In[ ]:
-
-
-use_GPU = core.use_gpu()
-model = models.CellposeModel(gpu=use_GPU)
-masks_all_dict = {"masks": [], "imgs": []}
+# In[7]:
 
 
-def get_masks(image, diameter):
-    masks, flows, styles, _ = model.eval(normalize(image), diameter=diameter)
-    return masks
+def perform_segmentation(nuclei_image_list):
+    use_GPU = core.use_gpu()
+    use_GPU = use_GPU and torch.cuda.is_available()
+    print("Using GPU:", use_GPU)
+    model = models.CellposeModel(gpu=use_GPU)
+    masks_all_dict = {"masks": [], "imgs": []}
+    for img in nuclei_image_list:
+        normalized_img = normalize(img)
+        mask, _, _ = model.eval(normalized_img, diameter=diameter)
+
+        masks_all_dict["masks"].append(mask)
+        masks_all_dict["imgs"].append(img)
+    return masks_all_dict
 
 
-# get masks for all the images
-# save to a dict for later use
-for img in range(nuclei.shape[0]):
-    nuclei[img, :, :] = normalize(nuclei[img, :, :])
-
-results = [
-    (
-        img,
-        nuclei[img, :, :].shape,
-        model.eval(nuclei[img, :, :], diameter=diameter),
-    )
-    for img in range(nuclei.shape[0])
-]
-
-# Print the results
-for img, shape, (masks, flows, styles) in results:
-    masks_all_dict["masks"].append(masks)
-    masks_all_dict["imgs"].append(img)
-
-
-masks_all = masks_all_dict["masks"]
-imgs = masks_all_dict["imgs"]
-masks_all = np.array(masks_all)
-imgs = np.array(imgs)
+masks_all_dict = perform_segmentation(nuclei_image_list)
 
 for frame_index, frame in enumerate(image_dict["nuclei_file_paths"]):
     tifffile.imwrite(
         pathlib.Path(
             input_dir / f"{str(frame).split('/')[-1].split('_C01')[0]}_nuclei_mask.tiff"
         ),
-        masks_all[frame_index, :, :],
+        masks_all_dict["masks"][frame_index].astype(np.uint16),
     )
 
 
-# In[9]:
+# In[8]:
 
 
 if in_notebook:
-    for z in range(len(masks_all)):
+    for timepoint in range(len(masks_all_dict["masks"])):
         plt.figure(figsize=(20, 10))
-        plt.title(f"z: {z}")
+        plt.title(f"z: {timepoint}")
         plt.axis("off")
         plt.subplot(1, 2, 1)
-        plt.imshow(nuclei[z], cmap="gray")
+        plt.imshow(nuclei[timepoint], cmap="gray")
         plt.title("Nuclei")
         plt.axis("off")
 
         plt.subplot(122)
-        plt.imshow(render_label(masks_all[z]))
+        plt.imshow(render_label(masks_all_dict["masks"][timepoint]))
         plt.title("Nuclei masks")
         plt.axis("off")
         plt.show()
 
 
-# In[10]:
+# In[9]:
 
 
 # set up memory profiler for GPU

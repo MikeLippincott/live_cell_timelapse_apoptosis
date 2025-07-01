@@ -5,7 +5,7 @@
 # The end goals is to segment cell and extract morphology features from cellprofiler.
 # These masks must be imported into cellprofiler to extract features.
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
