@@ -92,7 +92,7 @@ print("Starting level of GPU RAM available (MB): ", starting_level_GPU_RAM)
 
 # ## Set up images, paths and functions
 
-# In[4]:
+# In[ ]:
 
 
 unique_masks_dict = {
@@ -103,7 +103,7 @@ unique_masks_dict = {
 
 
 for input_dir in tqdm.tqdm(list_of_input_dirs):
-    if "2ch" not in str(input_dir):
+    if "2ch" not in str(input_dir):  # for the 4ch image sets (ChromaLive)
         image_extensions = {".tif", ".tiff"}
         files = sorted(input_dir.glob("*"))
         files = [str(x) for x in files if x.suffix in image_extensions]
@@ -151,7 +151,7 @@ for input_dir in tqdm.tqdm(list_of_input_dirs):
             )
         ]
         nuclei_image_list = [np.array(nuclei) for nuclei in image_dict["nuclei"]]
-    elif "2ch" in str(input_dir):
+    elif "2ch" in str(input_dir):  # for the 2ch image sets (AnnexinV)
         image_extensions = {".tif", ".tiff"}
         files = sorted(input_dir.glob("*"))
         files = [str(x) for x in files if x.suffix in image_extensions]

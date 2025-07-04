@@ -1,22 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
 import pathlib
 import sys
 
-import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import scipy.ndimage as scind
-import scipy.sparse
-from centrosome.filter import stretch
-from scipy.fftpack import fft2, ifft2
-from skimage import io, registration, transform
+import tifffile
 
 sys.path.append("../alignment_utils")
 from alignment_utils import align_cross_correlation, apply_alignment
@@ -69,7 +64,7 @@ offset_file_path = pathlib.Path(
 offset_file_path.parent.mkdir(parents=True, exist_ok=True)
 
 
-# In[3]:
+# In[ ]:
 
 
 final_timepoint_dna_path = pathlib.Path(
@@ -93,11 +88,13 @@ terminal_timepoint_cell_mask_path = pathlib.Path(
     terminal_timepoint_dir / f"{well_fov}_T0014_Z0001_cell_mask.tiff"
 ).resolve(strict=True)
 
-final_timepoint_dna = io.imread(str(final_timepoint_dna_path))
-terminal_timepoint_dna = io.imread(str(terminal_timepoint_dna_path))
-terminal_timepoint_annexin = io.imread(str(terminal_timepoint_annexin_path))
-terminal_timepoint_nuclei_mask = io.imread(str(terminal_timepoint_nuclei_mask_path))
-terminal_timepoint_cell_mask = io.imread(str(terminal_timepoint_cell_mask_path))
+final_timepoint_dna = tifffile.imread(str(final_timepoint_dna_path))
+terminal_timepoint_dna = tifffile.imread(str(terminal_timepoint_dna_path))
+terminal_timepoint_annexin = tifffile.imread(str(terminal_timepoint_annexin_path))
+terminal_timepoint_nuclei_mask = tifffile.imread(
+    str(terminal_timepoint_nuclei_mask_path)
+)
+terminal_timepoint_cell_mask = tifffile.imread(str(terminal_timepoint_cell_mask_path))
 
 
 # Align the dna stained images bewteen the two timepoints and apply the same transformation to all terminal images
@@ -160,7 +157,7 @@ offsets_df.to_parquet(
 )
 
 
-# In[7]:
+# In[ ]:
 
 
 # save the aligned images
@@ -178,15 +175,17 @@ aligned_terminal_timepoint_cell_mask_path = pathlib.Path(
 ).resolve()
 
 
-io.imsave(str(aligned_terminal_timepoint_dna_path), aligned_terminal_timepoint_dna)
-io.imsave(
+tifffile.imwrite(
+    str(aligned_terminal_timepoint_dna_path), aligned_terminal_timepoint_dna
+)
+tifffile.imwrite(
     str(aligned_terminal_timepoint_annexin_path), aligned_terminal_timepoint_annexin
 )
-io.imsave(
+tifffile.imwrite(
     str(aligned_terminal_timepoint_nuclei_mask_path),
     aligned_terminal_timepoint_nuclei_mask,
 )
-io.imsave(
+tifffile.imwrite(
     str(aligned_terminal_timepoint_cell_mask_path), aligned_terminal_timepoint_cell_mask
 )
 

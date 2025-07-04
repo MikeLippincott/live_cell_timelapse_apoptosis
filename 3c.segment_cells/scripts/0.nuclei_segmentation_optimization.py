@@ -152,12 +152,11 @@ all_masks_df = pd.DataFrame(unique_masks_dict)
 all_masks_df.head()
 
 
-# In[6]:
+# In[ ]:
 
 
 # plot the nuumber of masks for each diameter
 plt.figure(figsize=(10, 10))
-# plt.lineplot(data=all_masks_df, x="diameter", y="unique_masks", hue="image_dir")
 sns.lineplot(data=all_masks_df, x="diameter", y="unique_masks", hue="image_dir")
 # move the legend outside the plot
 plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
