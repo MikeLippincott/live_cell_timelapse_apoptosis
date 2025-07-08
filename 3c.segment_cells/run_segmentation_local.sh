@@ -7,7 +7,7 @@ conda activate timelapse_segmentation_env
 echo "Submitting GPU jobs to segment objects."
 
 
-cd scripts/ || exit
+cd notebooks/ || exit
 
 # get the list of dirs in path
 mapfile -t main_dirs < <(ls -d ../../2.cellprofiler_ic_processing/illum_directory/timelapse/*)
@@ -20,20 +20,17 @@ fi
 
 # run the pipelines
 for i in "${!main_dirs[@]}"; do
-    cd ../notebooks || exit
     main_dir="${main_dirs[$i]}"
     terminal_dir="${terminal_dirs[$i]}"
     echo "Processing main directory: $main_dir"
-    papermill 2.nuclei_segmentation.ipynb 2.nuclei_segmentation.ipynb \
+    papermill 1.nuclei_segmentation.ipynb 2.nuclei_segmentation.ipynb \
         -p input_dir "$main_dir" \
         -p diameter 70 \
         -p clip_limit 0.3
-    papermill 2.nuclei_segmentation.ipynb 2.nuclei_segmentation.ipynb \
+    papermill 1.nuclei_segmentation.ipynb 2.nuclei_segmentation.ipynb \
         -p input_dir "$terminal_dir" \
         -p diameter 70 \
         -p clip_limit 0.3
-    cd ../scripts || exit
-    python 3.cell_segmentation.py --input_dir "$main_dir" --clip_limit 0.3
 
 done
 

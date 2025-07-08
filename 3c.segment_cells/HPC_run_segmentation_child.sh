@@ -18,13 +18,17 @@ conda activate timelapse_segmentation_env
 main_dir=$1
 terminal_dir=$2
 
-cd scripts/ || exit
+cd notebooks/ || exit
 
 
-python 2.nuclei_segmentation.py --input_dir "$main_dir" --clip_limit 0.2 --diameter 70
-python 2.nuclei_segmentation.py --input_dir "$terminal_dir" --clip_limit 0.2 --diameter 70
-
-python 3.cell_segmentation.py --input_dir "$main_dir" --clip_limit 0.2
+papermill 1.nuclei_segmentation.ipynb 2.nuclei_segmentation.ipynb \
+        -p input_dir "$main_dir" \
+        -p diameter 70 \
+        -p clip_limit 0.3
+papermill 1.nuclei_segmentation.ipynb 2.nuclei_segmentation.ipynb \
+    -p input_dir "$terminal_dir" \
+    -p diameter 70 \
+    -p clip_limit 0.3
 
 cd ../ || exit
 

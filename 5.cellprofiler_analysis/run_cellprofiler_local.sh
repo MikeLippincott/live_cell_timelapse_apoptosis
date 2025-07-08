@@ -5,7 +5,7 @@ conda activate cellprofiler_timelapse_env
 # convert the jupyter notebook to a python script
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 cd scripts || exit
-python get_well_fov_array.py
+python 0.get_well_fov_array.py
 
 
 # time the bash script
@@ -19,15 +19,22 @@ i=0
 for well_fov in "${well_fovs[@]}"; do
     # run the python script
     echo "Running $i out of $well_fovs_length"
-    python run_cellprofiler_analysis.py --well_fov "$well_fov"
+
+    python 1.run_cellprofiler_analysis_timelapse.py --well_fov "$well_fov"
+    python 2.copy_cell_mask_over.py --well_fov "$well_fov"
+    python 3.endpoint_manual_alignment.py --well_fov "$well_fov"
+    python 6.run_cellprofiler_analysis_endpoint.py --well_fov "$well_fov"
     i=$((i + 1))
 done
+
+python 4.combine_offsets.py
+Rscript 5.plot_offsets.r
 
 # end the timer
 end=$(date +%s)
 runtime=$((end - start))
 echo "The runtime of the script is $runtime"
-# change the directory back to the orginal directory
+# change the directory back to the original directory
 cd ../ || exit
 
 conda deactivate
