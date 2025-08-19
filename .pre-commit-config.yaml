@@ -36,19 +36,19 @@ repos:
 
   # additional hooks found with in the pre-commit lib
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
     -   id: trailing-whitespace # removes trailing white spaces
     -   id: mixed-line-ending # removes mixed end of line
         args:
         -   --fix=lf
-- repo: local
-  hooks:
-    - id: shellcheck
-      name: shellcheck
-      description: Test shell scripts with shellcheck
-      entry: shellcheck
-      language: python
-      types: [shell]
-      require_serial: true # shellcheck can detect sourcing this way
+-   repo: local
+    hooks:
+    -   id: shellcheck
+        name: shellcheck
+        description: Test shell scripts with shellcheck
+        entry: shellcheck
+        language: python
+        types: [shell]
+        require_serial: true # shellcheck can detect sourcing this way
 

@@ -23,12 +23,12 @@ for well_fov in "${well_fovs[@]}"; do
     python 1.run_cellprofiler_analysis_timelapse.py --well_fov "$well_fov"
     python 2.copy_cell_mask_over.py --well_fov "$well_fov"
     python 3.endpoint_manual_alignment.py --well_fov "$well_fov"
-    python 6.run_cellprofiler_analysis_endpoint.py --well_fov "$well_fov"
+    python 4.run_cellprofiler_analysis_endpoint.py --well_fov "$well_fov"
     i=$((i + 1))
 done
 
-python 4.combine_offsets.py
-Rscript 5.plot_offsets.r
+python 5.combine_offsets.py
+Rscript 6.plot_offsets.r
 
 # end the timer
 end=$(date +%s)
