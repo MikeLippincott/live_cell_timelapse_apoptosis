@@ -27,7 +27,10 @@ for well_fov in "${well_fovs[@]}"; do
     i=$((i + 1))
 done
 
+
 python 5.combine_offsets.py
+conda deactivate
+conda activate R_timelapse_env
 Rscript 6.plot_offsets.r
 
 # end the timer
