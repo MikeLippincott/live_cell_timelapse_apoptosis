@@ -41,7 +41,7 @@ if not in_notebook:
 
 
 else:
-    well_fov = "E-11_F0004"
+    well_fov = "C-02_F0002"
 
 final_timepoint_dir = pathlib.Path(
     f"../../2.cellprofiler_ic_processing/illum_directory/timelapse/20231017ChromaLive_6hr_4ch_MaxIP_{well_fov}"
@@ -57,13 +57,15 @@ offset_file_path = pathlib.Path(
 offset_file_path.parent.mkdir(parents=True, exist_ok=True)
 
 
-# In[3]:
+# In[ ]:
 
 
 final_timepoint_dna_path = pathlib.Path(
     final_timepoint_dir / f"{well_fov}_T0013_Z0001_C01_illumcorrect.tiff"
 ).resolve(strict=True)
-
+final_timepoint_nuclei_mask_path = pathlib.Path(
+    final_timepoint_dir / f"{well_fov}_T0013_Z0001_nuclei_mask.tiff"
+).resolve(strict=True)
 
 terminal_timepoint_dna_path = pathlib.Path(
     terminal_timepoint_dir / f"{well_fov}_T0014_Z0001_C01_illumcorrect.tiff"
@@ -82,6 +84,7 @@ terminal_timepoint_cell_mask_path = pathlib.Path(
 ).resolve(strict=True)
 
 final_timepoint_dna = io.imread(str(final_timepoint_dna_path))
+final_timepoint_nuclei_mask = io.imread(str(final_timepoint_nuclei_mask_path))
 terminal_timepoint_dna = io.imread(str(terminal_timepoint_dna_path))
 terminal_timepoint_annexin = io.imread(str(terminal_timepoint_annexin_path))
 terminal_timepoint_nuclei_mask = io.imread(str(terminal_timepoint_nuclei_mask_path))
@@ -95,8 +98,8 @@ terminal_timepoint_cell_mask = io.imread(str(terminal_timepoint_cell_mask_path))
 
 # get offsets
 offsets = align_cross_correlation(
-    pixels1=final_timepoint_dna,
-    pixels2=terminal_timepoint_dna,
+    pixels1=final_timepoint_nuclei_mask,
+    pixels2=terminal_timepoint_nuclei_mask,
 )
 print("Offsets: ", offsets)
 
@@ -223,6 +226,29 @@ if in_notebook:
     plt.subplot(2, 5, 10)
     plt.imshow(aligned_terminal_timepoint_cell_mask, cmap="gray", vmin=0, vmax=255)
     plt.title("Aligned terminal\ntimepoint cell mask")
+    plt.axis("off")
+    plt.tight_layout()
+    plt.show()
+
+
+# In[9]:
+
+
+# plot the aligned overlay on the original final timepoint
+if in_notebook:
+    plt.figure(figsize=(6, 6))
+    plt.imshow(final_timepoint_dna, cmap="gray", vmin=0, vmax=255)
+    plt.imshow(aligned_terminal_timepoint_nuclei_mask, cmap="Reds", alpha=0.5)
+    plt.title("Final timepoint DNA with aligned terminal timepoint nuclei mask overlay")
+    plt.axis("off")
+    plt.tight_layout()
+    plt.show()
+# plot the over lay of the both the final and terminal timepoint DNA
+if in_notebook:
+    plt.figure(figsize=(6, 6))
+    plt.imshow(final_timepoint_dna, cmap="gray", vmin=0, vmax=255)
+    plt.imshow(terminal_timepoint_nuclei_mask, cmap="Reds", alpha=0.5)
+    plt.title("Final timepoint DNA with aligned terminal timepoint DNA overlay")
     plt.axis("off")
     plt.tight_layout()
     plt.show()

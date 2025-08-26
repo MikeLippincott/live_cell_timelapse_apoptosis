@@ -23,16 +23,18 @@ for i in "${!main_dirs[@]}"; do
     main_dir="${main_dirs[$i]}"
     terminal_dir="${terminal_dirs[$i]}"
     echo "Processing main directory: $main_dir"
-    papermill 1.nuclei_segmentation.ipynb 2.nuclei_segmentation.ipynb \
-        -p input_dir "$main_dir" \
-        -p diameter 70 \
-        -p clip_limit 0.3
-    papermill 1.nuclei_segmentation.ipynb 2.nuclei_segmentation.ipynb \
+    # papermill 1.nuclei_segmentation.ipynb 1.nuclei_segmentation.ipynb \
+    #     -p input_dir "$main_dir" \
+    #     -p diameter 70 \
+    #     -p clip_limit 0.3
+    papermill 1.nuclei_segmentation.ipynb 1.nuclei_segmentation.ipynb \
         -p input_dir "$terminal_dir" \
         -p diameter 70 \
         -p clip_limit 0.3
 
 done
+
+cd ../ || exit
 
 jupyter nbconvert --to script --output-dir=scripts/ notebooks/*.ipynb
 

@@ -76,7 +76,7 @@ if not in_notebook:
 
 else:
     print("Running in a notebook")
-    well_fov = "C-02_F0001"  # example well_fov
+    well_fov = "C-02_F0003"  # example well_fov
 
 
 input_dir = pathlib.Path(

@@ -33,7 +33,7 @@ if not in_notebook:
     well_fov = args.well_fov
 
 else:
-    well_fov = "E-11_F0004"
+    well_fov = "C-02_F0002"
 
 
 # In[3]:
@@ -44,7 +44,7 @@ final_timepoint_cell_mask_path = pathlib.Path(
 ).resolve(strict=True)
 copied_cell_mask_path = pathlib.Path(
     f"../../2.cellprofiler_ic_processing/illum_directory/endpoint/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP_{well_fov}/{well_fov}_T0014_Z0001_cell_mask.tiff"
-).resolve(strict=True)
+).resolve()
 
 # copy the cell mask to the terminal timepoint directory
 shutil.copy(final_timepoint_cell_mask_path, copied_cell_mask_path)

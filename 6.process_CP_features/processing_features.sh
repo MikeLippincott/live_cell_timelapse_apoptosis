@@ -19,7 +19,7 @@ for well_fov in "${well_fovs[@]}"; do
     # check if the fov name is equal to the well_fov
     echo "Processing $well_fov..."
     # run the script for the fov
-    # python 0.merge_sc.py --well_fov "$well_fov"
+    python 0.merge_sc.py --well_fov "$well_fov"
     python 1.annotate_sc.py --well_fov "$well_fov"
     python 2a.fuzzy_matching_timelapse.py --well_fov "$well_fov"
     python 2b.fuzzy_matching_endpoint.py --well_fov "$well_fov"

@@ -20,7 +20,7 @@ for well_fov in "${well_fovs[@]}"; do
     # run the python script
     echo "Running $i out of $well_fovs_length"
 
-    python 1.run_cellprofiler_analysis_timelapse.py --well_fov "$well_fov"
+    # python 1.run_cellprofiler_analysis_timelapse.py --well_fov "$well_fov"
     python 2.copy_cell_mask_over.py --well_fov "$well_fov"
     python 3.endpoint_manual_alignment.py --well_fov "$well_fov"
     python 4.run_cellprofiler_analysis_endpoint.py --well_fov "$well_fov"
