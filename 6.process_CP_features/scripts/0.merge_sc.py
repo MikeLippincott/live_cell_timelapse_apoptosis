@@ -31,7 +31,7 @@ except NameError:
 #
 # All paths must be string but we use pathlib to show which variables are paths
 
-# In[ ]:
+# In[2]:
 
 
 # type of file output from CytoTable (currently only parquet)
@@ -60,7 +60,7 @@ if not in_notebook:
     well_fov = args.well_fov
 else:
     print("Running in a notebook")
-    well_fov = "E-03_F0002"
+    well_fov = "E-05_F0001"
 
 
 # ## set config joins for each preset
@@ -72,7 +72,7 @@ else:
 preset = "cellprofiler_sqlite_pycytominer"
 
 
-# In[ ]:
+# In[4]:
 
 
 dict_of_inputs = {

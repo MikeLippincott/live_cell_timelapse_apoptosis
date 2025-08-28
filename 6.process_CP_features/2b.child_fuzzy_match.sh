@@ -16,7 +16,8 @@ well_fov=$1
 
 cd scripts/ || exit
 
-python 2.fuzzy_matching.py --well_fov $well_fov
+python 2a.fuzzy_matching_timelapse.py --well_fov "$well_fov"
+python 2b.fuzzy_matching_endpoint.py --well_fov "$well_fov"
 
 cd ../ || exit
 
