@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --nodes=1
 #SBATCH --mem=90G
-#SBATCH --partition=amem
-#SBATCH --qos=mem
+#SBATCH --partition=amilan
+#SBATCH --qos=normal
 #SBATCH --account=amc-general
-#SBATCH --time=5:00:00
+#SBATCH --time=2:00:00
 #SBATCH --output=Feature_selection-%j.out
 
 module load miniforge
