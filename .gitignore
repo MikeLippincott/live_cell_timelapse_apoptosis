@@ -96,7 +96,7 @@ data/processed_images/*
 # data (processed)
 data/models/dino_deitsmall16_pretrain_full_checkpoint.pth
 data/processed_images/**
-
+*Rplots.pdf
 
 
 
