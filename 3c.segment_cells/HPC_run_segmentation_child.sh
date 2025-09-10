@@ -21,11 +21,11 @@ terminal_dir=$2
 cd notebooks/ || exit
 
 
-papermill 1.nuclei_segmentation.ipynb 2.nuclei_segmentation.ipynb \
+papermill 1.nuclei_segmentation.ipynb 1.nuclei_segmentation.ipynb \
         -p input_dir "$main_dir" \
         -p diameter 70 \
         -p clip_limit 0.3
-papermill 1.nuclei_segmentation.ipynb 2.nuclei_segmentation.ipynb \
+papermill 1.nuclei_segmentation.ipynb 1.nuclei_segmentation.ipynb \
     -p input_dir "$terminal_dir" \
     -p diameter 70 \
     -p clip_limit 0.3
