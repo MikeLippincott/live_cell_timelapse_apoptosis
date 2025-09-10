@@ -32,7 +32,7 @@ for directory in directories:
     directory.rename(directory.parent / new_name)
 
 
-# In[5]:
+# In[ ]:
 
 
 # get all directories in data path

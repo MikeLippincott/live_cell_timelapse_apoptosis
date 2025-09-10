@@ -31,7 +31,7 @@ except NameError:
     in_notebook = False
 
 
-# In[2]:
+# In[ ]:
 
 
 def get_crop_counts(list_of_counts: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
@@ -74,6 +74,8 @@ def crop_image(
 
     Parameters
     ----------
+    metadata_df : pd.DataFrame
+        The metadata dataframe containing the information about the images
     i : int
         This is the iterator index for the metadata_df
     image_path : str
@@ -212,12 +214,15 @@ image_path = pathlib.Path(
 radius = 50
 
 
-# In[6]:
+# In[ ]:
 
 
 # set the number of processes to use
 if in_notebook:
-    num_processes = mp.cpu_count() - 8
+    num_processes = (
+        mp.cpu_count() - 8
+    )  # can manually set this to a lower number if needed
+    # set tot cores - 8 to avoid overloading the system
 else:
     num_processes = mp.cpu_count()
 print(f"Number of processes: {num_processes}")
