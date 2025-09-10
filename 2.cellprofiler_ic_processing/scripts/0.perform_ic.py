@@ -2,7 +2,7 @@
 # coding: utf-8
 
 # # Run CellProfiler `illum.cppipe` (IC) pipeline
-# 
+#
 # In this notebook, we run the CellProfiler IC pipeline to calculate the illumination (illum) correction functions for all images per channel (4), apply the functions, and save images into a new directory.
 
 # ## Import libraries
@@ -17,8 +17,7 @@ import sys
 sys.path.append("../../utils")
 from cp_utils import run_cellprofiler
 
-
-# In[7]:
+# In[2]:
 
 
 # check if in a jupyter notebook
@@ -31,7 +30,7 @@ except NameError:
 if not in_notebook:
     print("Running as script")
     # set up arg parser
-    parser = argparse.ArgumentParser(description="Segment the nuclei of a tiff image")
+    parser = argparse.ArgumentParser(description="Run IC of a tiff image")
 
     parser.add_argument(
         "--input_dir",
@@ -44,13 +43,13 @@ if not in_notebook:
 else:
     print("Running in a notebook")
     input_dir = pathlib.Path(
-        "../../data/test_data/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP/C-02_F0001"
+        "../../data/preprocessed_data/20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP/C-02_F0001"
     ).resolve()
 
 
 # ## Set paths
 
-# In[12]:
+# In[3]:
 
 
 if "test" in str(input_dir):
@@ -68,7 +67,7 @@ else:
 illum_directory.mkdir(parents=True, exist_ok=True)
 
 
-# In[13]:
+# In[4]:
 
 
 illum_name = str(input_dir).split("/")[-2] + "_" + str(input_dir).split("/")[-1]
@@ -77,7 +76,7 @@ print(illum_name)
 
 # ## Define the input paths
 
-# In[14]:
+# In[5]:
 
 
 path_to_output = pathlib.Path(f"{illum_directory}/{illum_name}").resolve()
@@ -86,7 +85,7 @@ path_to_output = pathlib.Path(f"{illum_directory}/{illum_name}").resolve()
 # ## Run `illum.cppipe` pipeline and calculate + save IC images
 # This last cell does not get run as we run this pipeline in the command line.
 
-# In[15]:
+# In[6]:
 
 
 run_cellprofiler(
@@ -96,4 +95,3 @@ run_cellprofiler(
     sqlite_name=illum_name,
     rename_sqlite_file_bool=True,
 )
-

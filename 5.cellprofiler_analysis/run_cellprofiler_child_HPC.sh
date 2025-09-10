@@ -17,7 +17,10 @@ conda activate cellprofiler_timelapse_env
 cd scripts || exit
 
 # run the python script
-python run_cellprofiler_analysis.py --well_fov "$well_fov"
+python 1.run_cellprofiler_analysis_timelapse.py --well_fov "$well_fov"
+python 2.copy_cell_mask_over.py --well_fov "$well_fov"
+python 3.endpoint_manual_alignment.py --well_fov "$well_fov"
+python 4.run_cellprofiler_analysis_endpoint.py --well_fov "$well_fov"
 
 # change the directory back to the original directory
 cd ../ || exit
