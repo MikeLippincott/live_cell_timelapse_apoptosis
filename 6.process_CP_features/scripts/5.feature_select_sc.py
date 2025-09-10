@@ -59,16 +59,6 @@ feature_select_ops = [
 # In[4]:
 
 
-manual_block_list = [
-    "Nuclei_AreaShape_BoundingBoxArea",
-    "Nuclei_AreaShape_BoundingBoxMinimum_X",
-    "Cells_AreaShape_BoundingBoxArea",
-]
-
-
-# In[5]:
-
-
 for data_set in paths_dict:
     paths_dict[data_set]["output_file_dir"].parent.mkdir(exist_ok=True, parents=True)
     # read in the annotated file
@@ -78,6 +68,13 @@ for data_set in paths_dict:
         normalized_df,
         operation=feature_select_ops,
     )
+    manual_block_list = [
+        x
+        for x in normalized_df.columns
+        if "bounding" in x.lower()
+        or "Location_Center_Y" in x.lower()
+        or "Location_Center_X" in x.lower()
+    ]
 
     # add "Metadata_" to the beginning of each column name in the list
     feature_select_df.columns = [

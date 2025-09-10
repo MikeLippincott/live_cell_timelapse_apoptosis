@@ -19,12 +19,12 @@ well_fovs=$(ls $well_fov_path)
 echo "${well_fovs[@]}"
 
 
-for file in "$well_fov_path"/*; do
-    filename=$(basename "$file")
-    well_fov="${filename#*MaxIP_}"
+for dir in "$well_fov_path"/*; do
+    dirname=$(basename "$dir")
+    well_fov="${dirname#*MaxIP_}"
     echo "Well FOV: $well_fov"
     cd ../ || exit
-    sbatch HPC_child_cell_tracking_script.sh $well_fov
+    sbatch HPC_child_cell_tracking_script.sh "$well_fov"
     cd scripts/ || exit
 done
 

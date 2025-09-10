@@ -57,7 +57,7 @@ clear_gpu_memory()
 import napari
 from napari.utils.notebook_display import nbscreenshot
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -76,7 +76,7 @@ if not in_notebook:
 
 else:
     print("Running in a notebook")
-    well_fov = "C-02_F0001"  # example well_fov
+    well_fov = "C-02_F0003"  # example well_fov
 
 
 input_dir = pathlib.Path(
@@ -97,13 +97,13 @@ figures_output_dir.mkdir(exist_ok=True)
 results_output_dir.mkdir(exist_ok=True)
 
 
-# In[16]:
+# In[3]:
 
 
 print(f"Input directory: {input_dir}")
 
 
-# In[17]:
+# In[4]:
 
 
 file_extensions = {".tif", ".tiff"}
@@ -119,7 +119,7 @@ print(f"Found {len(mask_files)} tiff files in the input directory")
 print(f"Found {len(nuclei_files)} nuclei files in the input directory")
 
 
-# In[21]:
+# In[5]:
 
 
 # read in the masks and create labels
@@ -139,7 +139,7 @@ nuclei.append(tifffile.imread(terminal_nuclei_file_dir)[:, :, 0].astype(np.uint8
 nuclei = np.array(nuclei)
 
 
-# In[22]:
+# In[6]:
 
 
 image_dims = tifffile.imread(tiff_files[0]).shape
@@ -148,7 +148,7 @@ timelapse_raw = np.zeros(
 )
 
 
-# In[23]:
+# In[7]:
 
 
 detections = np.zeros((len(masks), image_dims[0], image_dims[1]), dtype=np.uint16)
@@ -160,7 +160,7 @@ print(detections.shape, edges.shape)
 clear_gpu_memory()
 
 
-# In[24]:
+# In[8]:
 
 
 params_df = estimate_parameters_from_labels(masks, is_timelapse=True)
@@ -170,7 +170,7 @@ if in_notebook:
 
 # ## Optimize the tracking using optuna and ultrack
 
-# In[25]:
+# In[9]:
 
 
 config = MainConfig()
@@ -180,7 +180,7 @@ config.tracking_config.disappear_weight = -0.2
 pprint.pprint(config.dict())
 
 
-# In[26]:
+# In[10]:
 
 
 track(
@@ -191,7 +191,7 @@ track(
 )
 
 
-# In[27]:
+# In[11]:
 
 
 tracks_df, graph = to_tracks_layer(config)
@@ -203,10 +203,11 @@ tracks_df = close_tracks_gaps(
 )
 
 
-# In[28]:
+# In[12]:
 
 
 labels = tracks_to_zarr(config, tracks_df)
+# save the tracks as parquet
 tracks_df.to_parquet(
     f"{results_output_dir}/{str(input_dir).split('MaxIP_')[1]}_tracks.parquet"
 )
@@ -215,10 +216,9 @@ print(f"Found {tracks_df['track_id'].nunique()} unique tracks in the dataset.")
 tracks_df.head()
 
 
-# In[29]:
+# In[13]:
 
 
-# save the tracks as parquet
 tracks_df.reset_index(drop=True, inplace=True)
 tracks = np.zeros((len(tiff_files), image_dims[0], image_dims[1]), dtype=np.uint16)
 cum_tracks_df = tracks_df.copy()
@@ -228,7 +228,7 @@ timepoints = tracks_df["t"].unique()
 cum_tracks_df = cum_tracks_df.loc[cum_tracks_df["t"] == -1]
 
 
-# In[30]:
+# In[14]:
 
 
 if in_notebook:
@@ -260,7 +260,7 @@ if in_notebook:
         plt.close()
 
 
-# In[31]:
+# In[15]:
 
 
 # load each image
@@ -274,7 +274,7 @@ fig_path = figures_output_dir / f"{str(input_dir).split('MaxIP_')[1]}_tracks.gif
 frames[0].save(fig_path, save_all=True, append_images=frames[1:], duration=100, loop=0)
 
 
-# In[32]:
+# In[16]:
 
 
 # clean up tracking files
@@ -289,13 +289,13 @@ if metadata_toml_path.exists():
     metadata_toml_path.unlink()
 
 
-# In[33]:
+# In[17]:
 
 
 clear_gpu_memory()
 
 
-# In[34]:
+# In[ ]:
 
 
 if in_notebook:
@@ -310,4 +310,4 @@ if in_notebook:
     viewer.layers["masks"].visible = False
 
     nbscreenshot(viewer)
-    # viewer.close()
+    viewer.close()

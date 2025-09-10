@@ -2,7 +2,7 @@ CellProfiler Pipeline: http://www.cellprofiler.org
 Version:5
 DateRevision:426
 GitHash:
-ModuleCount:17
+ModuleCount:20
 HasImagePlaneDetails:False
 
 Images:[module_num:1|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Module notes are provided by Jenna Tomkinson.', '', 'Images module is left blank since we are giving the path to the images in the CLI command']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
@@ -42,10 +42,10 @@ NamesAndTypes:[module_num:3|svn_version:'Unknown'|variable_revision_number:8|sho
     Assign a name to:Images matching rules
     Select the image type:Grayscale image
     Name to assign these images:DNA
-    Match metadata:[{'DNA': 'Channel', 'CL_488_2': 'Channel', 'CL_488-1': 'Channel', 'CL_561': 'Channel', 'Nuclei': 'Channel', 'Cells': 'Channel'}]
+    Match metadata:[{'DNA': 'Channel', 'CL_488_2': 'Channel', 'CL_488-1': 'Channel', 'CL_561': 'Channel', 'Nuclei': 'Channel'}]
     Image set matching method:Order
     Set intensity range from:Image metadata
-    Assignments count:6
+    Assignments count:5
     Single images count:0
     Maximum intensity:255.0
     Process as 3D?:No
@@ -74,12 +74,6 @@ NamesAndTypes:[module_num:3|svn_version:'Unknown'|variable_revision_number:8|sho
     Name to assign these images:CL_561
     Name to assign these objects:Cell
     Select the image type:Grayscale image
-    Set intensity range from:Image metadata
-    Maximum intensity:255.0
-    Select the rule criteria:and (metadata does Channel "cell_mask")
-    Name to assign these images:mask
-    Name to assign these objects:Cells
-    Select the image type:Objects
     Set intensity range from:Image metadata
     Maximum intensity:255.0
     Select the rule criteria:and (metadata does Channel "nuclei_mask")
@@ -118,13 +112,69 @@ ImageMath:[module_num:5|svn_version:'Unknown'|variable_revision_number:5|show_wi
     Multiply the third image by:1.0
     Measurement:
 
-IdentifyTertiaryObjects:[module_num:6|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Identify cytoplasm compartment by subtracting nuclei masks from cells masks.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+IdentifySecondaryObjects:[module_num:6|svn_version:'Unknown'|variable_revision_number:10|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input objects:Nuclei
+    Name the objects to be identified:Cells
+    Select the method to identify the secondary objects:Propagation
+    Select the input image:all_488_561
+    Number of pixels by which to expand the primary objects:10
+    Regularization factor:0.05
+    Discard secondary objects touching the border of the image?:No
+    Discard the associated primary objects?:No
+    Name the new primary objects:FilteredNuclei
+    Fill holes in identified objects?:Yes
+    Threshold setting version:12
+    Threshold strategy:Global
+    Thresholding method:Minimum Cross-Entropy
+    Threshold smoothing scale:0.0
+    Threshold correction factor:1.0
+    Lower and upper bounds on threshold:0.0,1.0
+    Manual threshold:0.0
+    Select the measurement to threshold with:None
+    Two-class or three-class thresholding?:Two classes
+    Log transform before thresholding?:No
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:50
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2.0
+    Thresholding method:Minimum Cross-Entropy
+
+IdentifyTertiaryObjects:[module_num:7|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Identify cytoplasm compartment by subtracting nuclei masks from cells masks.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the larger identified objects:Cells
     Select the smaller identified objects:Nuclei
     Name the tertiary objects to be identified:Cytoplasm
     Shrink smaller object prior to subtraction?:Yes
 
-MeasureColocalization:[module_num:7|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:['Measure correlation for whole image and objects.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+ConvertObjectsToImage:[module_num:8|svn_version:'Unknown'|variable_revision_number:1|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input objects:Cells
+    Name the output image:CellImage
+    Select the color format:uint16
+    Select the colormap:Default
+
+SaveImages:[module_num:9|svn_version:'Unknown'|variable_revision_number:16|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the type of image to save:Image
+    Select the image to save:CellImage
+    Select method for constructing file names:From image filename
+    Select image name for file prefix:CL_561
+    Enter single file name:OrigBlue
+    Number of digits:4
+    Append a suffix to the image file name?:No
+    Text to append to the image name:
+    Saved file format:tiff
+    Output file location:Default Output Folder|
+    Image bit depth:8-bit integer
+    Overwrite existing files without warning?:Yes
+    When to save:Every cycle
+    Record the file and path information to the saved image?:No
+    Create subfolders in the output folder?:No
+    Base image folder:Elsewhere...|
+    How to save the series:T (Time)
+    Save with lossless compression?:Yes
+
+MeasureColocalization:[module_num:10|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:['Measure correlation for whole image and objects.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select images to measure:CL_488-1, CL_488_2, CL_561, DNA
     Set threshold as percentage of maximum intensity for the images:15.0
     Select where to measure correlation:Both
@@ -137,7 +187,7 @@ MeasureColocalization:[module_num:7|svn_version:'Unknown'|variable_revision_numb
     Calculate the Manders coefficients using Costes auto threshold?:Yes
     Method for Costes thresholding:Faster
 
-MeasureGranularity:[module_num:8|svn_version:'Unknown'|variable_revision_number:4|show_window:False|notes:['Measures granularity within images and objects (when parameter is turned on).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MeasureGranularity:[module_num:11|svn_version:'Unknown'|variable_revision_number:4|show_window:False|notes:['Measures granularity within images and objects (when parameter is turned on).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select images to measure:CL_488-1, CL_488_2, CL_561, DNA
     Measure within objects?:Yes
     Select objects to measure:Cells, Cytoplasm, Nuclei
@@ -146,18 +196,18 @@ MeasureGranularity:[module_num:8|svn_version:'Unknown'|variable_revision_number:
     Radius of structuring element:10
     Range of the granular spectrum:16
 
-MeasureObjectIntensity:[module_num:9|svn_version:'Unknown'|variable_revision_number:4|show_window:False|notes:['Measures intensity within objects.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MeasureObjectIntensity:[module_num:12|svn_version:'Unknown'|variable_revision_number:4|show_window:False|notes:['Measures intensity within objects.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select images to measure:CL_488-1, CL_488_2, CL_561, DNA
     Select objects to measure:Cells, Cytoplasm, Nuclei
 
-MeasureImageIntensity:[module_num:10|svn_version:'Unknown'|variable_revision_number:4|show_window:False|notes:['Measures whole image intensity not aggregated within objects.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MeasureImageIntensity:[module_num:13|svn_version:'Unknown'|variable_revision_number:4|show_window:False|notes:['Measures whole image intensity not aggregated within objects.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select images to measure:CL_488-1, CL_488_2, CL_561, DNA
     Measure the intensity only from areas enclosed by objects?:No
     Select input object sets:Cells, Cytoplasm, Nuclei
     Calculate custom percentiles:No
     Specify percentiles to measure:10,90
 
-MeasureObjectNeighbors:[module_num:11|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Measure cell neighbors that are adjacent to each other.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MeasureObjectNeighbors:[module_num:14|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Measure cell neighbors that are adjacent to each other.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select objects to measure:Cells
     Select neighboring objects to measure:Cells
     Method to determine neighbors:Adjacent
@@ -170,7 +220,7 @@ MeasureObjectNeighbors:[module_num:11|svn_version:'Unknown'|variable_revision_nu
     Name the output image:PercentTouching
     Select colormap:Oranges
 
-MeasureObjectNeighbors:[module_num:12|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Measure Nuclei neighbors that are adjacent to each other.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MeasureObjectNeighbors:[module_num:15|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Measure Nuclei neighbors that are adjacent to each other.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select objects to measure:Nuclei
     Select neighboring objects to measure:Nuclei
     Method to determine neighbors:Adjacent
@@ -183,7 +233,7 @@ MeasureObjectNeighbors:[module_num:12|svn_version:'Unknown'|variable_revision_nu
     Name the output image:PercentTouching
     Select colormap:Oranges
 
-MeasureObjectIntensityDistribution:[module_num:13|svn_version:'Unknown'|variable_revision_number:6|show_window:False|notes:['Measure object intensity distributions witin objects using center x,y coords for each single object.', '', "We calculate Zernikes for magnitudes and phases as we are interested in seeing phase even if it doesn't help with classifying phenotypes."]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MeasureObjectIntensityDistribution:[module_num:16|svn_version:'Unknown'|variable_revision_number:6|show_window:False|notes:['Measure object intensity distributions witin objects using center x,y coords for each single object.', '', "We calculate Zernikes for magnitudes and phases as we are interested in seeing phase even if it doesn't help with classifying phenotypes."]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select images to measure:CL_488-1, CL_488_2, CL_561, DNA
     Hidden:3
     Hidden:1
@@ -203,12 +253,12 @@ MeasureObjectIntensityDistribution:[module_num:13|svn_version:'Unknown'|variable
     Number of bins:4
     Maximum radius:100
 
-MeasureObjectSizeShape:[module_num:14|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Measure object size and shape metrics (not related to stain).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MeasureObjectSizeShape:[module_num:17|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Measure object size and shape metrics (not related to stain).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select object sets to measure:Cells, Cytoplasm, Nuclei
     Calculate the Zernike features?:Yes
     Calculate the advanced features?:No
 
-MeasureTexture:[module_num:15|svn_version:'Unknown'|variable_revision_number:7|show_window:False|notes:['Measure texture within objects and the whole images.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MeasureTexture:[module_num:18|svn_version:'Unknown'|variable_revision_number:7|show_window:False|notes:['Measure texture within objects and the whole images.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select images to measure:CL_488-1, CL_488_2, CL_561, DNA
     Select objects to measure:Cells, Cytoplasm, Nuclei
     Enter how many gray levels to measure the texture at:256
@@ -216,12 +266,12 @@ MeasureTexture:[module_num:15|svn_version:'Unknown'|variable_revision_number:7|s
     Measure whole images or objects?:Both
     Texture scale to measure:3
 
-MeasureImageAreaOccupied:[module_num:16|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:['Measure area occupied by all compartments within images.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MeasureImageAreaOccupied:[module_num:19|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:['Measure area occupied by all compartments within images.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Measure the area occupied by:Objects
     Select binary images to measure:
     Select object sets to measure:Cells, Cytoplasm, Nuclei
 
-ExportToDatabase:[module_num:17|svn_version:'Unknown'|variable_revision_number:28|show_window:False|notes:['Output the morphology features into an SQLite database.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+ExportToDatabase:[module_num:20|svn_version:'Unknown'|variable_revision_number:28|show_window:False|notes:['Output the morphology features into an SQLite database.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Database type:SQLite
     Database name:DefaultDB
     Add a prefix to table names?:No
