@@ -93,7 +93,7 @@ for experiment in files_df["experiment"].unique():
 #
 #
 
-# In[4]:
+# In[ ]:
 
 
 preprocessed_terminal_data_path = pathlib.Path(
@@ -127,7 +127,6 @@ for well_fov_dir in well_fov_dirs:
         new_well_fov_dir = well_fov_dir.parent / well_fov_dir.name.replace(
             "F0005", "F0004"
         )
-        # print(f"Renaming {well_fov_dir} to {new_well_fov_dir}")
         shutil.move(well_fov_dir, new_well_fov_dir)
         files = [x for x in new_well_fov_dir.iterdir() if x.is_file()]
         files.sort()
