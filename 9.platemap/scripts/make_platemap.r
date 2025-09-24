@@ -74,6 +74,4 @@ platemap <- (
 )
 platemap
 # save plot
-ggsave(figure_file, platemap, width = 10, height = 10, units = "in")
-
-
+ggsave(figure_file, platemap, width = width, height = height, units = "in")
