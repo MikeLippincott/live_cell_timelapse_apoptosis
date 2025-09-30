@@ -12,7 +12,7 @@ for (lib in libraries) {
         )
     )
 }
-
+source("../../utils/r_themes.r")
 
 offset_df <- arrow::read_parquet("../results/all_offset_results.parquet")
 metadata_df <- read.csv("../../data/platemap_6hr_4ch.csv")
@@ -44,19 +44,6 @@ offset_df$dose <- factor(
 )
 unique(offset_df$dose)
 
-color_pallete_for_dose <- c(
-    "0" = "#85FF33",
-    "0.61" = "#75FF1A",
-    "1.22" = "#62FF00",
-    "2.44" = "#4DC507",
-    "4.88" = "#398E0B",
-    "9.77" = "#265A0C",
-    "19.53" = "#132B08",
-    "39.06" = "#620B8E",
-    "78.13" = "#410C5A",
-    "156.25" = "#21082B"
-)
-
 # plotting image line
 # where the line forms a box
 # -950 to 950
@@ -79,9 +66,9 @@ offsets_plot <- (
     + labs(
         x = "X Offset (pixels)",
         y = "Y Offset (pixels)",
-        color = "Dose (uM)"
+        color = "Stuarosporine dose (nM)"
     )
-    + scale_color_manual(values = color_pallete_for_dose)
+    + scale_color_manual(values = color_palette_dose)
 
     + theme(
         legend.position = "right",
