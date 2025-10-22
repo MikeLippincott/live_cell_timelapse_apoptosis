@@ -53,7 +53,6 @@ if not in_notebook:
 
 else:
 
-
     well_fov = "C-02_F0002"
 
 
@@ -82,7 +81,6 @@ output_dir.mkdir(exist_ok=True, parents=True)
 
 
 dict_of_inputs = {
-
     "20231017ChromaLive_6hr_4ch_MaxIP": {
         "path_to_images": pathlib.Path(timelapse_dir).resolve(strict=True),
         "path_to_output": pathlib.Path(f"{output_dir}/timelapse/{well_fov}").resolve(),
