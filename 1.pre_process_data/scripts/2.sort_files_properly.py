@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# This notebook will sort the image files by Well and FOV across time for more effiecient parallel processing.
-# The sorted images will be saved in a new directory.
+# This notebook will sort the image files by Well and FOV across time for more efficient parallel processing.
+# The sorted images will be saved in a new directory as renamed files.
 
 # In[1]:
 
