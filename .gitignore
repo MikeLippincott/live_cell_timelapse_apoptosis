@@ -59,6 +59,19 @@ data/processed_images/*
 3c.segment_cells/tmp_output/*
 !3c.segment_cells/figures/C-02_F0001_tracks.gif
 
+4.cell_tracking/figures/*
+4.cell_tracking/results/*
+
+# keep one example of the figures
+!4.cell_tracking/figures/C-02_F0003_tracks.gif
+
+# cellprofiler logs
+5.cellprofiler_analysis/scripts/logs
+5.cellprofiler_analysis/scripts/*.log
+5.cellprofiler_analysis/notebooks/logs
+5.cellprofiler_analysis/notebooks/*.logs
+5.cellprofiler_analysis/analysis_output
+5.cellprofiler_analysis/pipelines/generated_pipelines
 
 # cytomining results
 6.process_CP_features/data/
@@ -93,6 +106,9 @@ data/processed_images/**
 5.cell_tracking/results/*
 6.scDINO_analysis/0.pre-process_images/data/*
 *Rplots.pdf
-5.cell_tracking/figures/*
-# keep one example of the figures
-!5.cell_tracking/figures/C-02_F0003_tracks.gif
+
+
+
+
+
+

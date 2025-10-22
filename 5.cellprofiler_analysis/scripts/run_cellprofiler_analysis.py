@@ -52,9 +52,19 @@ if not in_notebook:
     well_fov = args.well_fov
 
 else:
+
+
     well_fov = "C-02_F0002"
 
 
+endpoint_dir = pathlib.Path(
+    f"{images_dir}/endpoint/{experiment_prefix_endpoint}{well_fov}/"
+)
+print("Running in a notebook")
+well_fov = "E-11_F0003"
+timelapse_dir = pathlib.Path(
+    f"{images_dir}/timelapse/{experiment_prefix_timelapse}{well_fov}/"
+)
 endpoint_dir = pathlib.Path(
     f"{images_dir}/endpoint/{experiment_prefix_endpoint}{well_fov}/"
 )
@@ -68,10 +78,18 @@ output_dir.mkdir(exist_ok=True, parents=True)
 
 # ## Create dictionary with all info for each plate
 
-# In[4]:
+# In[ ]:
 
 
 dict_of_inputs = {
+
+    "20231017ChromaLive_6hr_4ch_MaxIP": {
+        "path_to_images": pathlib.Path(timelapse_dir).resolve(strict=True),
+        "path_to_output": pathlib.Path(f"{output_dir}/timelapse/{well_fov}").resolve(),
+        "path_to_pipeline": pathlib.Path(
+            f"{path_to_pipelines}/analysis_4ch.cppipe"
+        ).resolve(),
+    },
     "run_20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP": {
         "path_to_images": pathlib.Path(endpoint_dir).resolve(),
         "path_to_output": pathlib.Path(f"{output_dir}/endpoint/{well_fov}").resolve(),
