@@ -52,29 +52,22 @@ if not in_notebook:
     well_fov = args.well_fov
 
 else:
-<<<<<<<< HEAD:5.cellprofiler_analysis/scripts/4.run_cellprofiler_analysis_endpoint.py
-========
-<<<<<<<< HEAD:5.cellprofiler_analysis/scripts/4.run_cellprofiler_analysis_endpoint.py
->>>>>>>> MikeLippincott-refactor_modules:5.cellprofiler_analysis/scripts/run_cellprofiler_analysis.py
+
+
     well_fov = "C-02_F0002"
 
 
 endpoint_dir = pathlib.Path(
     f"{images_dir}/endpoint/{experiment_prefix_endpoint}{well_fov}/"
 )
-<<<<<<<< HEAD:5.cellprofiler_analysis/scripts/4.run_cellprofiler_analysis_endpoint.py
-========
-========
-    print("Running in a notebook")
-    well_fov = "E-11_F0003"
-    timelapse_dir = pathlib.Path(
-        f"{images_dir}/timelapse/{experiment_prefix_timelapse}{well_fov}/"
-    )
-    endpoint_dir = pathlib.Path(
-        f"{images_dir}/endpoint/{experiment_prefix_endpoint}{well_fov}/"
-    )
->>>>>>>> 2c3cf4e (Refactor modules (#37)):5.cellprofiler_analysis/scripts/run_cellprofiler_analysis.py
->>>>>>>> MikeLippincott-refactor_modules:5.cellprofiler_analysis/scripts/run_cellprofiler_analysis.py
+print("Running in a notebook")
+well_fov = "E-11_F0003"
+timelapse_dir = pathlib.Path(
+    f"{images_dir}/timelapse/{experiment_prefix_timelapse}{well_fov}/"
+)
+endpoint_dir = pathlib.Path(
+    f"{images_dir}/endpoint/{experiment_prefix_endpoint}{well_fov}/"
+)
 
 path_to_pipelines = pathlib.Path("../pipelines/").resolve(strict=True)
 
@@ -89,10 +82,7 @@ output_dir.mkdir(exist_ok=True, parents=True)
 
 
 dict_of_inputs = {
-<<<<<<<< HEAD:5.cellprofiler_analysis/scripts/4.run_cellprofiler_analysis_endpoint.py
-========
-<<<<<<<< HEAD:5.cellprofiler_analysis/scripts/4.run_cellprofiler_analysis_endpoint.py
-========
+
     "20231017ChromaLive_6hr_4ch_MaxIP": {
         "path_to_images": pathlib.Path(timelapse_dir).resolve(strict=True),
         "path_to_output": pathlib.Path(f"{output_dir}/timelapse/{well_fov}").resolve(),
@@ -100,8 +90,6 @@ dict_of_inputs = {
             f"{path_to_pipelines}/analysis_4ch.cppipe"
         ).resolve(),
     },
->>>>>>>> 2c3cf4e (Refactor modules (#37)):5.cellprofiler_analysis/scripts/run_cellprofiler_analysis.py
->>>>>>>> MikeLippincott-refactor_modules:5.cellprofiler_analysis/scripts/run_cellprofiler_analysis.py
     "run_20231017ChromaLive_endpoint_w_AnnexinV_2ch_MaxIP": {
         "path_to_images": pathlib.Path(endpoint_dir).resolve(),
         "path_to_output": pathlib.Path(f"{output_dir}/endpoint/{well_fov}").resolve(),
