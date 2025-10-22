@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# This notebooks copies over the cell mask files from the CellProfiler output directory to the main data directory for easier access during analysis.
+
 # In[1]:
 
 
@@ -33,10 +35,10 @@ if not in_notebook:
     well_fov = args.well_fov
 
 else:
-    well_fov = "C-02_F0002"
+    well_fov = "C-02_F0004"
 
 
-# In[3]:
+# In[ ]:
 
 
 final_timepoint_cell_mask_path = pathlib.Path(

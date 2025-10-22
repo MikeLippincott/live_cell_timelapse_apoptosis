@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import glob
@@ -24,7 +24,7 @@ except NameError:
 
 
 sqlite_path = pathlib.Path(
-    "../../4.cellprofiler_analysis/analysis_output/endpoint_whole_image"
+    "../../5.cellprofiler_analysis/analysis_output/endpoint_whole_image"
 ).resolve()
 # get the files in the children directories
 sqlite_files = glob.glob(f"{sqlite_path}/**/*.sqlite", recursive=True)
@@ -77,7 +77,7 @@ blacklist_keywords = [
 ]
 
 
-# In[ ]:
+# In[6]:
 
 
 list_of_dfs = []
@@ -193,7 +193,7 @@ feature_select_df.head()
 
 # ## Aggregation
 
-# In[ ]:
+# In[11]:
 
 
 metadata_cols = feature_select_df.columns[

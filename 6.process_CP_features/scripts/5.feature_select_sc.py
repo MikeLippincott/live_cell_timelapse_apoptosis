@@ -56,7 +56,7 @@ feature_select_ops = [
 ]
 
 
-# In[4]:
+# In[ ]:
 
 
 for data_set in paths_dict:
@@ -72,8 +72,8 @@ for data_set in paths_dict:
         x
         for x in normalized_df.columns
         if "bounding" in x.lower()
-        or "Location_Center_Y" in x.lower()
-        or "Location_Center_X" in x.lower()
+        or "location_center_y" in x.lower()
+        or "location_center_x" in x.lower()
     ]
 
     # add "Metadata_" to the beginning of each column name in the list
